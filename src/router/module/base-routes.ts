@@ -96,10 +96,16 @@ export default [
         meta: {title: '巧匠安维'},
         children: [
             {
+                path: '/qiaojiang/info/worker',
+                name: 'QiaojiangInfoWorker',
+                component: () => import('../../views/qiaojiang/info_worker/index.vue'),
+                meta: {title: 'PLUS打卡', requireAuth: true},
+            },
+            {
                 path: '/qiaojiang/invoice',
                 name: 'QiaojiangInvoice',
                 component: () => import('../../views/qiaojiang/invoice/index.vue'),
-                meta: {title: '退货质检', requireAuth: true},
+                meta: {title: '发票管理', requireAuth: true},
             },
             {
                 path: '/qiaojiang/pluslocation',
