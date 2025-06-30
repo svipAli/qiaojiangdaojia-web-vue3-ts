@@ -435,7 +435,7 @@ const getProductPartStatus = (status: number) => {
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '60px', type: 'number', fixed: 'left'},
-  {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left',hide: true},
+  {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left', hide: true},
   {title: '退货状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status'},
   {title: '订单编号', width: '200px', key: 'order_no', sort: 'desc'},
   {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
@@ -526,16 +526,6 @@ const query = ref({
   warehouse_name: -1,
 })
 
-const selectAllClass = (id: number) => {
-  if (!query.value.class_id.includes(id)) {
-    query.value.class_id.push(id)
-  }
-}
-const selectAllShop = (id: number) => {
-  if (!query.value.shop_id.includes(id)) {
-    query.value.shop_id.push(id)
-  }
-}
 const changeProductPartCount = async (row: any) => {
   let data: setProductPartCountBody = {
     part_id: row.id,
@@ -586,14 +576,7 @@ const setProductTray = async (tray_no: string) => {
     }
   })
 }
-const getDataSourceRow = (DataSource: any, row_id: any) => {
-  for (let item of DataSource.value) {
-    if (item.id === row_id) {
-      return item
-    }
-  }
-  return null
-}
+
 const setbackProductWarehouseNo = (id_list: Array<number>, warehouse_no: string, index: string) => {
   let data: setBackProductWarehouseNoBody = {
     id_list: id_list,
@@ -712,7 +695,6 @@ const backProductPutInWarehouseNoCancel = async (data: Array<number>) => {
 
 const searchPartVisible = (type: number) => {
   addPartVisible.value = !addPartVisible.value
-  dataSource3.value = []
   if (type === 0) {
     partVisibleTitle.value = '新增机器配件'
     loadDataSource3()
@@ -724,11 +706,13 @@ const searchPartVisible = (type: number) => {
 }
 
 const loadDataSource3 = async () => {
+
   loading3.value = true
   await apiQueryProductPart({id: currentRow.value.id}).then((res: Result) => {
     let {code, data, message} = res
     if (code === 0) {
       dataSource3.value = data
+      selectedKeys3.value = []
     } else {
       layer.msg(message, {icon: 2, time: 2000})
     }
@@ -742,6 +726,7 @@ const loadDataSource3_ = async () => {
     let {code, data, message} = res
     if (code === 0) {
       dataSource3.value = data
+      selectedKeys3.value = []
     } else {
       layer.msg(message, {icon: 2, time: 2000})
     }
@@ -771,6 +756,7 @@ const loadDataSource2 = async () => {
     let {code, data, message} = res
     if (code === 0) {
       dataSource2.value = data
+      selectedKeys2.value = []
     } else {
       layer.msg(message, {icon: 2, time: 2000})
     }
@@ -887,6 +873,7 @@ const queryDataSource = async () => {
     if (code === 0) {
       dataSource.value = data
       page.total = total
+      selectedKeys.value = []
     } else {
       layer.msg(message, {icon: 2, time: 2000})
     }

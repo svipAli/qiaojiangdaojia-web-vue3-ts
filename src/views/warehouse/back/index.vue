@@ -1026,6 +1026,7 @@ const queryDataSource = async () => {
         page.total = total
       }
       dataSource.value = data
+      selectedKeys.value = []
     } else {
       layer.msg(message, {icon: 3, time: 2000})
     }
@@ -1046,6 +1047,7 @@ const queryDataSource2 = async () => {
     if (code === 0) {
       page2.total = total
       dataSource2.value = data
+      selectedKeys2.value = []
     } else {
       layer.msg(message, {icon: 3, time: 2000})
     }
@@ -1062,6 +1064,7 @@ const queryDataSource3 = async (row: any) => {
     let {code, data, message} = res
     if (code === 0) {
       dataSource3.value = data
+      selectedKeys3.value = []
     } else {
       layer.msg(message, {icon: 3, time: 2000})
     }

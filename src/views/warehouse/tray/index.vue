@@ -308,6 +308,7 @@ const queryDataSource = async () => {
     let {code, data, message} = res
     if (code === 0) {
       dataSource.value = data
+      selectedKeys.value = []
     } else {
       layer.msg(message, {icon: 3, time: 2000})
     }
