@@ -9,7 +9,7 @@ export interface addQJInvoiceBody {
     invoice_remark: string;
     receive_email: string;
     invoice_amount: number;
-    invoice_type: number;
+    invoice_type: number|string;
     tax_point: number;
 }
 

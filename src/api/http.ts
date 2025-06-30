@@ -10,7 +10,8 @@ type TAxiosOption = {
 
 export const config: TAxiosOption = {
     timeout: 30000,
-    baseURL: "https://api.qj.xienkeji.com/",
+    baseURL: "https://api.qj.xienkeji.com",
+    // baseURL: "https://api.qiaojiangdaojia.top",
 }
 
 class Http {
@@ -53,18 +54,28 @@ class Http {
                     break;
             }
         }, error => {
-            if (error.response.status === 401) {
-                router.push('/login');
+            console.log(error)
+            if (!error.response) {
+                layer.msg('请求失败！', {icon: 2, time: 3000})
                 return Promise.reject(error);
-            } else {
+            }
+            if (error.response.status === 401) {
+                layer.msg('身份验证失败，请重新登录！', {icon: 2, time: 3000})
+                return Promise.reject(error);
+            } else if (error.response.status === 403) {
                 let detail = error.response.data.detail;
                 if (typeof detail === 'object') {
                     detail = JSON.stringify(detail);
                 }
                 layer.msg(detail, {icon: 2, time: 3000})
                 return Promise.reject(error);
+            } else if (error.response.status === 500) {
+                layer.msg('服务器错误', {icon: 2, time: 3000})
+                return Promise.reject(error);
+            } else {
+                layer.msg(error.message, {icon: 2, time: 3000})
+                return Promise.reject(error);
             }
-
         })
     }
 

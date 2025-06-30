@@ -241,7 +241,7 @@ const title = ref('')
 const model = ref({
   invoice_title: '',
   tax_no: '',
-  invoice_type: 1,
+  invoice_type: '',
   address: '',
   phone: '',
   bank_name: '',
@@ -257,7 +257,7 @@ const toCancel = () => {
   model.value = {
     invoice_title: '',
     tax_no: '',
-    invoice_type: 1,
+    invoice_type: '',
     address: '',
     phone: '',
     bank_name: '',

@@ -333,6 +333,7 @@ const changeVisibleAddForm = (text: any, row: any) => {
   title.value = text
   if (row != null) {
     addProductFormData.value = JSON.parse(JSON.stringify(row))
+    addProductFormData.value.class_id = row.parent_class_id
     currentId.value = row.id
   } else {
     addProductFormData.value = {
