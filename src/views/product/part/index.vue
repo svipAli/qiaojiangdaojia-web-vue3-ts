@@ -394,11 +394,18 @@ const classChange = async () => {
 
 const loadDataSource = async () => {
   loading.value = true
-  const data: getPageBody = {
+  const data: queryPartBody = {
+    product_model: searchQuery.value.product_model,
+    part_name: searchQuery.value.part_name,
+    part_model: searchQuery.value.part_model,
+    class_id: searchQuery.value.class_id,
+    remark: searchQuery.value.remark,
+    create_time: searchQuery.value.create_time,
+    status: searchQuery.value.status,
     page: page.current,
     limit: page.limit,
   }
-  await apiGetPart(data).then((res: DataResult) => {
+  await apiQueryPart(data).then((res: DataResult) => {
     let {code, data, total, message} = res
     if (code === 0) {
       page.total = total

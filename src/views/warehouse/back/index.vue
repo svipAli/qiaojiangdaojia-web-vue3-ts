@@ -160,7 +160,7 @@
         </template>
       </lay-table>
     </div>
-    <lay-layer v-model="visible11" :title="title" :area="['800px', '750px']">
+    <lay-layer v-model="visible11" :title="title" :area="['800px', '780px']">
       <div style="padding: 20px">
         <lay-form :model="model11" ref="layFormRef11">
           <lay-form-item label="店铺名称" prop="shop_id">
@@ -191,6 +191,17 @@
                 v-model="model11.kf_remark"
             ></lay-textarea>
           </lay-form-item>
+          <template v-if="title==='新增'">
+            <lay-form-item label="退换货原因" prop="back_reasons">
+              <lay-select v-model="back_reasons" @change="changeSelectReason" :showSearch="true"
+                          :allowClear="true" style="width: 100%">
+                <lay-select-option value="">请选择退换货原因</lay-select-option>
+                <template v-for="item of backReasons">
+                  <lay-select-option :value="item.label">{{ item.value }}</lay-select-option>
+                </template>
+              </lay-select>
+            </lay-form-item>
+          </template>
           <lay-form-item label="退换货原因" prop="back_reason">
             <lay-textarea
                 placeholder="请输入退换货原因"
@@ -444,6 +455,18 @@ import {apiQueryShop} from "@/api/module/shop";
 
 import COS from 'cos-js-sdk-v5';
 
+const backReasons = ref([
+  {label: '不想要了', value: '不想要了'},
+  {label: '尺寸不合适，无法安装', value: '尺寸不合适，无法安装'},
+  {label: '长时间无师傅上门安装，客户不想要了', value: '长时间无师傅上门安装，客户不想要了'},
+  {label: '退款重新购买其他型号', value: '退款重新购买其他型号'},
+  {label: '预留线不够，无法安装', value: '预留线不够，无法安装'},
+  {label: '马桶是弧度，无法安装', value: '马桶是弧度，无法安装'},
+  {label: '坑距不符，无法安装', value: '坑距不符，无法安装'},
+  {label: '厚度太厚，无法安装', value: '厚度太厚，无法安装'},
+  {label: '其他原因', value: ''},
+])
+const back_reasons = ref('')
 defineOptions({
   name: 'WarehouseBack'
 })
@@ -539,6 +562,9 @@ const getCurrentRowIndex = (id: number) => {
     }
   }
   return null;
+}
+const changeSelectReason = (value: string) => {
+  model11.value.back_reason = value
 }
 
 const batchOptionSet = async () => {
@@ -1005,6 +1031,37 @@ const loadDataSource2 = async () => {
   page2.current = 1
   await queryDataSource2()
 }
+const updateDataSource = async (id: number) => {
+  const data: getBackQueryBody = {
+    page: page.current,
+    limit: page.limit,
+    shop_id: searchQuery.value.shop_id,
+    status: searchQuery.value.status,
+    br_id: searchQuery.value.br_id,
+    logistics_no: searchQuery.value.logistics_no,
+    create_time: searchQuery.value.create_time,
+    update_time: searchQuery.value.update_time,
+    order_no: searchQuery.value.order_no
+  }
+  await apiBackQuery(data).then((res: DataResult) => {
+    let {code, data, total, message} = res
+    if (code === 0) {
+      let updateRow = {}
+      for (let item of data) {
+        if (item.id === id) {
+          updateRow = item
+        }
+      }
+      for (let i = 0; i < dataSource.value.length; i++) {
+        if (dataSource.value[i].id === id) {
+          dataSource.value[i] = updateRow
+        }
+      }
+    } else {
+      layer.msg(message, {icon: 3, time: 2000})
+    }
+  })
+}
 
 const queryDataSource = async () => {
   loading.value = true
@@ -1165,7 +1222,7 @@ const editBackRecord = async () => {
     let {code, message} = res
     if (code === 0) {
       layer.msg('操作成功')
-      loadDataSource()
+      updateDataSource(currentRow.value.id)
       visible11.value = false
     } else {
       layer.msg(message)
@@ -1179,7 +1236,7 @@ const addBackRecord = async () => {
     let {code, message} = res
     if (code === 0) {
       layer.msg('操作成功')
-      loadDataSource()
+      queryDataSource()
       visible11.value = false
     } else {
       layer.msg(message)

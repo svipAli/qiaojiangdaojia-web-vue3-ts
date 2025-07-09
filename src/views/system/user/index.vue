@@ -6,9 +6,8 @@
           <lay-col :md="5">
             <lay-form-item label="用户账号" label-width="80">
               <lay-input
-                v-model="searchQuery.userAccount"
+                v-model="searchQuery.username"
                 placeholder="请输入"
-                size="sm"
                 :allow-clear="true"
                 style="width: 98%"
               ></lay-input>
@@ -175,9 +174,7 @@
 import { ref, reactive } from 'vue'
 import { layer } from '@layui/layui-vue'
 const searchQuery = ref({
-  userAccount: '',
-  userName: '',
-  sex: ''
+  username: '',
 })
 
 const visibleImport = ref(false)
@@ -187,9 +184,7 @@ function toImport() {
 }
 function toReset() {
   searchQuery.value = {
-    userAccount: '',
-    userName: '',
-    sex: ''
+    username: '',
   }
 }
 
