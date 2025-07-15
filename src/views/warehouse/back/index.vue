@@ -941,7 +941,6 @@ const backProductAddWarehouseWindow = (row_list: any) => {
     }
   })
 }
-
 const batchOptionVisible = ref(false)
 const loading = ref(false)
 const loading2 = ref(false)
@@ -954,7 +953,14 @@ const page2 = reactive({current: 1, limit: 10, total: 0})
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '60px', type: 'number', fixed: 'left'},
-  {title: '状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status', fixed: 'left'},
+  {
+    title: '状态',
+    width: '100px',
+    key: 'status',
+    sort: 'desc',
+    customSlot: 'status',
+    fixed: 'left',
+  },
   {title: '店铺名称', width: '250px', key: 'shop_id', sort: 'desc', customSlot: 'shop'},
   {title: '订单号', width: '180px', key: 'order_no'},
   {title: '退货原因', width: '160px', key: 'back_reason', sort: 'desc'},
@@ -962,18 +968,30 @@ const columns = ref([
   {title: '退款单号', width: '160px', key: 'refund_no'},
   {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc'},
   {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc'},
-  {title: '物流单号', width: '150px', key: 'logistics_no'},
+  {title: '物流单号', width: '150px', key: 'logistics_no',},
   {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
-  {title: '更新时间', width: '160px', key: 'update_time', sort: 'desc', customSlot: 'update_time'},
+  {
+    title: '更新时间',
+    width: '160px',
+    key: 'update_time',
+    sort: 'desc',
+    customSlot: 'update_time',
+  },
   {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc'},
-  {title: '创建时间', width: '160px', key: 'create_time', sort: 'desc', customSlot: 'create_time'},
+  {
+    title: '创建时间',
+    width: '160px',
+    key: 'create_time',
+    sort: 'desc',
+    customSlot: 'create_time',
+  },
   {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc'},
   {
     title: '操作',
     width: '260px',
     customSlot: 'operator',
     key: 'operator',
-    fixed: 'right'
+    fixed: 'right',
   }
 ])
 
