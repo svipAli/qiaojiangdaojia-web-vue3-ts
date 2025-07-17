@@ -3,6 +3,11 @@ export interface addTrayBody {
     remark: string;
 }
 
+export interface editTrayBody {
+    id: number;
+    remark: string;
+}
+
 export interface getTrayQueryBody extends addTrayBody {
     status: number;
 }

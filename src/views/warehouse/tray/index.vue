@@ -12,9 +12,19 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
+          <lay-col :md="8">
+            <lay-form-item label="备注" label-width="80">
+              <lay-input
+                  v-model="query.remark"
+                  :allow-clear="true"
+                  style="width: 98%"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
           <lay-col :md="4">
             <lay-form-item label="状态" label-width="80">
               <lay-select v-model="query.status" style="width: 120px">
+                <lay-select-option :value="-1" label="全部"></lay-select-option>
                 <lay-select-option :value="0" label="待维修"></lay-select-option>
                 <lay-select-option :value="1" label="维修中"></lay-select-option>
                 <lay-select-option :value="2" label="维修完成"></lay-select-option>
@@ -45,7 +55,7 @@
           :default-toolbar="true"
           v-model:selectedKeys="selectedKeys">
         <template #toolbar>
-          <lay-button type="primary" size="sm" @click="changeVisible('新增')">
+          <lay-button type="primary" size="sm" @click="changeVisible('新增',null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
             新增
           </lay-button>
@@ -55,6 +65,7 @@
           </lay-button>
         </template>
         <template v-slot:operator="{ row }">
+          <lay-button size="xs" type="normal" @click="changeVisible('编辑',row)">编辑</lay-button>
           <lay-button size="xs" type="primary" @click="changeVisible2(row)">配置</lay-button>
           <lay-button size="xs" type="primary" @click="exportTrayPart(row)">导出配件</lay-button>
           <lay-popconfirm
@@ -88,12 +99,14 @@
       </lay-table>
     </lay-card>
   </lay-container>
-  <lay-layer v-model="visible" :title="title" :area="['400px', '500px']">
+  <lay-layer v-model="visible" :title="title" :area="['400px', '350px']">
     <div style="padding: 20px">
       <lay-form :model="model">
-        <lay-form-item label="托盘号" prop="tray_no">
-          <lay-input v-model="model.tray_no"></lay-input>
-        </lay-form-item>
+        <template v-if="title==='新增'">
+          <lay-form-item label="托盘号" prop="tray_no">
+            <lay-input v-model="model.tray_no"></lay-input>
+          </lay-form-item>
+        </template>
         <lay-form-item label="备注" prop="back_reason">
           <lay-textarea
               v-model="model.remark"
@@ -132,10 +145,16 @@
 import {onMounted, ref} from 'vue'
 import {layer} from "@layui/layui-vue";
 import {convertTime} from "@/utils/globalFunctions";
-import {addTrayBody, exportTrayPartBody, getTrayQueryBody, updateTrayConfigBody} from "@/types/warehouse-tray";
+import {
+  addTrayBody,
+  editTrayBody,
+  exportTrayPartBody,
+  getTrayQueryBody,
+  updateTrayConfigBody
+} from "@/types/warehouse-tray";
 import {
   apiAddTray,
-  apiDelTray,
+  apiDelTray, apiEditTray,
   apiExportTrayPart,
   apiQueryTray,
   apiUpdateTrayConfig
@@ -148,7 +167,8 @@ const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left'},
   {title: '状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status', fixed: 'left'},
-  {title: '托盘号', width: '250px', key: 'tray_no', sort: 'desc'},
+  {title: '托盘号', width: '200px', key: 'tray_no', sort: 'desc', resize: true},
+  {title: '备注', width: '300px', key: 'remark', sort: 'desc', resize: true},
   {title: '次品数量', width: '100px', key: 'back_product_count'},
   {title: '配件数量', width: '100px', key: 'back_product_part_count'},
   {title: '配件金额', width: '100px', key: 'back_product_part_price'},
@@ -168,7 +188,7 @@ const columns = ref([
   {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc'},
   {
     title: '操作',
-    width: '170px',
+    width: '220px',
     customSlot: 'operator',
     key: 'operator',
     fixed: 'right'
@@ -273,13 +293,17 @@ const resetModel = () => {
 const currentRow = ref()
 const query = ref({
   tray_no: '',
-  status: 0
+  remark: '',
+  status: -1
 })
-const changeVisible = (curr_title: string) => {
+const changeVisible = (curr_title: string, row: any) => {
   title.value = curr_title
   if (curr_title === '新增') {
     resetModel()
     currentRow.value = {}
+  } else if (curr_title === '编辑') {
+    currentRow.value = row
+    model.value = row
   }
   visible.value = !visible.value
 }
@@ -301,6 +325,7 @@ const toSearch = () => {
 const toReset = () => {
   query.value = {
     tray_no: '',
+    remark: '',
     status: -1
   }
 }
@@ -309,6 +334,7 @@ const queryDataSource = async () => {
   loading.value = true
   let data: getTrayQueryBody = {
     tray_no: query.value.tray_no,
+    remark: query.value.remark,
     status: query.value.status
   }
   await apiQueryTray(data).then((res: Result) => {
@@ -347,10 +373,27 @@ const toRemove = () => {
     }
   })
 }
-
+const editTray = async () => {
+  let data: editTrayBody = {
+    id: currentRow.value.id,
+    remark: currentRow.value.remark,
+  }
+  await apiEditTray(data).then((res: Result) => {
+    let {code, message} = res
+    if (code === 0) {
+      layer.msg(message)
+      visible.value = false
+      queryDataSource()
+    } else {
+      layer.msg(message, {icon: 2, time: 2000})
+    }
+  })
+}
 const toSubmit = () => {
   if (title.value === '新增') {
     addTray()
+  } else if (title.value === '编辑') {
+    editTray()
   }
 }
 

@@ -1,5 +1,11 @@
 import Http from '../http';
-import {addTrayBody, exportTrayPartBody, getTrayQueryBody, updateTrayConfigBody} from "@/types/warehouse-tray";
+import {
+    addTrayBody,
+    editTrayBody,
+    exportTrayPartBody,
+    getTrayQueryBody,
+    updateTrayConfigBody
+} from "@/types/warehouse-tray";
 
 export const apiAddTray = (data: addTrayBody) => {
     return Http.post('/add_tray', data)
@@ -7,6 +13,10 @@ export const apiAddTray = (data: addTrayBody) => {
 
 export const apiQueryTray = (data: getTrayQueryBody) => {
     return Http.post('/query_tray', data)
+}
+
+export const apiEditTray = (data: editTrayBody) => {
+    return Http.post('/edit_tray', data)
 }
 
 export const apiDelTray = (data: Array<number>) => {
