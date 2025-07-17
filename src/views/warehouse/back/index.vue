@@ -170,8 +170,11 @@
               </template>
             </lay-select>
           </lay-form-item>
-          <lay-form-item label="订单号" prop="order_no">
-            <lay-input v-model="model11.order_no"></lay-input>
+          <lay-form-item label="订单号" prop="order_no" mode="inline">
+            <lay-input v-model="model11.order_no" style="width: 580px"></lay-input>
+          </lay-form-item>
+          <lay-form-item mode="inline">
+            <lay-button type="normal" size="sm" @click="checkOrder">检测</lay-button>
           </lay-form-item>
           <lay-form-item label="退款单号" prop="refund_no">
             <lay-input v-model="model11.refund_no"></lay-input>
@@ -426,7 +429,7 @@
 import {onMounted, reactive, ref} from 'vue'
 import {layer} from '@layui/layui-vue'
 import {
-  addBackRecordBody, batchOptionSetBody,
+  addBackRecordBody, batchOptionSetBody, checkOrderBody,
   editBackRecordBody,
   getBackProductBody,
   getBackQueryBody, getVideoUrlBody,
@@ -437,7 +440,7 @@ import {
 } from "@/types/warehouse-back";
 import {
   apiAddBackRecord,
-  apiBackQuery, apiBatchOptionSet,
+  apiBackQuery, apiBatchOptionSet, apiCheckOrder,
   apiDelBackProduct, apiDelBackRecord, apiDelVideoUrl,
   apiEditBackRecord,
   apiGetBackProduct, apiGetVideoUrl,
@@ -522,6 +525,20 @@ const update_video_url = async (file_url: string, br_id: string) => {
     } else {
       layer.msg(message)
     }
+  })
+}
+
+const checkOrder = async () => {
+  if (!model11.value.order_no) {
+    layer.msg('请输入订单号')
+    return;
+  }
+  let data: checkOrderBody = {
+    order_no: model11.value.order_no
+  }
+  await apiCheckOrder(data).then((res: Result) => {
+    let {message} = res
+    layer.msg(message)
   })
 }
 const batchOption = ref({
@@ -965,11 +982,7 @@ const columns = ref([
   {title: '订单号', width: '180px', key: 'order_no'},
   {title: '退货原因', width: '160px', key: 'back_reason', sort: 'desc'},
   {title: '客服备注', width: '160px', key: 'kf_remark'},
-  {title: '退款单号', width: '160px', key: 'refund_no'},
-  {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc'},
-  {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc'},
   {title: '物流单号', width: '150px', key: 'logistics_no',},
-  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
   {
     title: '更新时间',
     width: '160px',
@@ -977,6 +990,10 @@ const columns = ref([
     sort: 'desc',
     customSlot: 'update_time',
   },
+  {title: '退款单号', width: '160px', key: 'refund_no'},
+  {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc'},
+  {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc'},
+  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
   {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc'},
   {
     title: '创建时间',
@@ -1180,7 +1197,7 @@ const DelBackRecord = async (data: Array<number>) => {
     let {code, message} = res
     if (code === 0) {
       layer.msg('操作成功')
-      loadDataSource()
+      queryDataSource()
     } else {
       layer.msg(message)
     }
@@ -1226,7 +1243,7 @@ const switchBackRecordStatus = async (row: any) => {
     let {code, message} = res
     if (code === 0) {
       layer.msg('操作成功')
-      loadDataSource()
+      queryDataSource()
     } else {
       layer.msg(message)
     }

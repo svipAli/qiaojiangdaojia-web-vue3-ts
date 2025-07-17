@@ -1,6 +1,6 @@
 import Http from '../http';
 import {
-    addBackRecordBody, batchOptionSetBody, editBackRecordBody,
+    addBackRecordBody, batchOptionSetBody, checkOrderBody, editBackRecordBody,
     getBackProductBody,
     getBackQueryBody, getVideoUrlBody,
     saveAddBackProductBody, setBackProductWarehouseNoBody,
@@ -66,4 +66,8 @@ export const apiUpdateVideoUrl = (data: updateVideoUrlBody) => {
 
 export const apiBatchOptionSet = (data: batchOptionSetBody) => {
     return Http.post('/batch_option_set', data)
+}
+
+export const apiCheckOrder = (data: checkOrderBody) => {
+    return Http.get('/check_order', data)
 }

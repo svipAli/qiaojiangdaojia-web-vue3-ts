@@ -263,7 +263,7 @@ defineOptions({
 })
 const productMore = reactive({
   page: 1,
-  limit: 100,
+  limit: 10000,
 })
 const addFormData = ref({
   part_class_id: 0,

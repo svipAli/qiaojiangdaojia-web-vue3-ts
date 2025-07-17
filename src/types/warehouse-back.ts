@@ -66,3 +66,7 @@ export interface batchOptionSetBody {
     quality_type: number;
     warehouse_name: number;
 }
+
+export interface checkOrderBody {
+    order_no: string;
+}

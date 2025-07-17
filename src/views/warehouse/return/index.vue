@@ -12,7 +12,14 @@
                   style="width: 100%"
                   :multiple="true"
               >
-                <lay-select-option :value="-1" label="全部分类"></lay-select-option>
+                <template #header>
+                  <div style="padding: 10px">
+                    <lay-checkbox v-model="checkboxValue" skin="primary"
+                                  @change="selectAllChange" :value="-1">全部分类
+                    </lay-checkbox>
+                  </div>
+                </template>
+                <!--                <lay-select-option :value="-1" label="全部分类"></lay-select-option>-->
                 <template v-for="key in classList">
                   <lay-select-option :value="key.id" :label="key.name"></lay-select-option>
                 </template>
@@ -357,6 +364,15 @@ import {apiSetBackProductWarehouseNo} from "@/api/module/warehouse-back";
 defineOptions({
   name: 'WarehouseReturn'
 })
+
+const checkboxValue = ref(true)
+const selectAllChange = () => {
+  if (checkboxValue.value) {
+    query.value.class_id = classList.value.map((item: any) => item.id)
+  } else {
+    query.value.class_id = []
+  }
+}
 const getRepairStatus = (repair_status: number) => {
   switch (repair_status) {
     case 0:
@@ -441,9 +457,9 @@ const columns = ref([
   {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
   {title: '物流单号', width: '200px', key: 'logistics_no', sort: 'desc'},
   {title: '店铺名称', width: '250px', key: 'shop', sort: 'desc'},
-  {title: '品质类型', width: '160px', key: 'quality_type', sort: 'desc', customSlot: 'quality_type'},
   {title: '仓库名称', width: '160px', key: 'warehouse_name', sort: 'desc', customSlot: 'warehouse_name'},
   {title: '产品型号', width: '150px', key: 'product_model', sort: 'desc'},
+  {title: '品质类型', width: '160px', key: 'quality_type', sort: 'desc', customSlot: 'quality_type'},
   {title: '产品数量', width: '150px', key: 'count', sort: 'desc', hide: true},
   {title: '产品名称', width: '150px', key: 'product_name', sort: 'desc'},
   {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
@@ -577,6 +593,15 @@ const setProductTray = async (tray_no: string) => {
   })
 }
 
+const setRowWarehouseNo = (id_list: Array<number>, warehouse_no: string) => {
+  for (let i = 0; i < warehouse_no.length; i++) {
+    let index = getCurrentRowIndex(id_list[i])
+    if (index === -1) {
+      continue
+    }
+    dataSource.value[index].put_in_warehouse_no = warehouse_no
+  }
+}
 const setbackProductWarehouseNo = (id_list: Array<number>, warehouse_no: string, index: string) => {
   let data: setBackProductWarehouseNoBody = {
     id_list: id_list,
@@ -586,12 +611,20 @@ const setbackProductWarehouseNo = (id_list: Array<number>, warehouse_no: string,
     let {code, message} = res
     if (code === 0) {
       layer.msg('操作成功')
-      queryDataSource()
+      setRowWarehouseNo(id_list, warehouse_no)
       layer.close(index)
     } else {
       layer.msg(message)
     }
   })
+}
+const getCurrentRowIndex = (row_id: number) => {
+  for (let i = 0; i < dataSource.value.length; i++) {
+    if (dataSource.value[i].id === row_id) {
+      return i
+    }
+  }
+  return -1
 }
 const getCurrentRow = (row_id: number) => {
   for (let item of dataSource.value) {
@@ -808,6 +841,7 @@ const getAllProductClass = () => {
     let {code, data, message} = res
     if (code === 0) {
       classList.value = data
+      selectAllChange()
       return true
     } else {
       layer.msg(message, {icon: 2, time: 2000})
