@@ -88,11 +88,16 @@
       </lay-table>
     </lay-card>
   </lay-container>
-  <lay-layer v-model="visible" :title="title" :area="['400px', '200px']">
+  <lay-layer v-model="visible" :title="title" :area="['400px', '500px']">
     <div style="padding: 20px">
       <lay-form :model="model">
         <lay-form-item label="托盘号" prop="tray_no">
           <lay-input v-model="model.tray_no"></lay-input>
+        </lay-form-item>
+        <lay-form-item label="备注" prop="back_reason">
+          <lay-textarea
+              v-model="model.remark"
+          ></lay-textarea>
         </lay-form-item>
       </lay-form>
       <div style="width: 100%; text-align: center">
@@ -189,7 +194,8 @@ const visible = ref(false)
 const title = ref('')
 
 const model = ref({
-  tray_no: ''
+  tray_no: '',
+  remark: ''
 })
 const visible2 = ref(false)
 const config_model = ref({
@@ -260,7 +266,8 @@ const exportTrayPart = async (row: any) => {
 
 const resetModel = () => {
   model.value = {
-    tray_no: ''
+    tray_no: '',
+    remark: ''
   }
 }
 const currentRow = ref()

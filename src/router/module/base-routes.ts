@@ -208,9 +208,9 @@ export default [
                 meta: {title: '登录日志', requireAuth: true},
             },
             {
-                path: '/system/option',
-                component: () => import('../../views/system/option/index.vue'),
-                meta: {title: '操作日志', requireAuth: true},
+                path: '/system/visit',
+                component: () => import('../../views/system/visit/index.vue'),
+                meta: {title: '访问日志', requireAuth: true},
             },
         ]
     }, {

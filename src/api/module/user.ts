@@ -28,3 +28,7 @@ export const apiAddUser = (data: addUserBody) => {
 export const apiEditUser = (data: editUserBody) => {
     return Http.post('/edit_user', data)
 }
+
+export const apiDeleteUser = (data: Array<number>) => {
+    return Http.post('/del_user', data)
+}

@@ -1,5 +1,6 @@
 export interface addTrayBody {
     tray_no: string;
+    remark: string;
 }
 
 export interface getTrayQueryBody extends addTrayBody {
