@@ -332,6 +332,7 @@
               <lay-select-option :value="0" label="待定"></lay-select-option>
               <lay-select-option :value="1" label="正品仓"></lay-select-option>
               <lay-select-option :value="4" label="次转正仓"></lay-select-option>
+              <lay-select-option :value="5" label="专送仓"></lay-select-option>
               <lay-select-option :value="2" label="次品仓"></lay-select-option>
               <lay-select-option :value="3" label="报废仓"></lay-select-option>
             </lay-select>
@@ -976,33 +977,33 @@ const columns = ref([
     key: 'status',
     sort: 'desc',
     customSlot: 'status',
-    fixed: 'left',
+    fixed: 'left', resize: true
   },
-  {title: '店铺名称', width: '250px', key: 'shop_id', sort: 'desc', customSlot: 'shop'},
-  {title: '订单号', width: '180px', key: 'order_no'},
-  {title: '退货原因', width: '160px', key: 'back_reason', sort: 'desc'},
-  {title: '客服备注', width: '160px', key: 'kf_remark'},
-  {title: '物流单号', width: '150px', key: 'logistics_no',},
+  {title: '店铺名称', width: '250px', key: 'shop_id', sort: 'desc', customSlot: 'shop',resize: true},
+  {title: '订单号', width: '180px', key: 'order_no',resize: true},
+  {title: '退货原因', width: '160px', key: 'back_reason', sort: 'desc',resize: true},
+  {title: '客服备注', width: '160px', key: 'kf_remark',resize: true},
+  {title: '物流单号', width: '150px', key: 'logistics_no',resize: true},
   {
     title: '更新时间',
     width: '160px',
     key: 'update_time',
     sort: 'desc',
-    customSlot: 'update_time',
+    customSlot: 'update_time',resize: true
   },
-  {title: '退款单号', width: '160px', key: 'refund_no'},
-  {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc'},
-  {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc'},
-  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
-  {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc'},
+  {title: '退款单号', width: '160px', key: 'refund_no',resize: true},
+  {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc',resize: true},
+  {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc',resize: true},
+  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc',resize: true},
+  {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc',resize: true},
   {
     title: '创建时间',
     width: '160px',
     key: 'create_time',
     sort: 'desc',
-    customSlot: 'create_time',
+    customSlot: 'create_time',resize: true
   },
-  {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc'},
+  {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc',resize: true},
   {
     title: '操作',
     width: '260px',

@@ -236,9 +236,8 @@ const getRoleList = async () => {
     limit: 10000,
   }
   await apiGetRole(data).then((res: DataResult) => {
-    let {code, data, total, message} = res
+    let {code, data, message} = res
     if (code === 0) {
-      page.total = total
       roleList.value = data
     } else {
       layer.msg(message, {icon: 3, time: 2000})
@@ -292,7 +291,7 @@ const getRoleName = (role_id: number) => {
 }
 const loading = ref(false)
 const selectedKeys = ref<number[]>([])
-const page = reactive({current: 1, limit: 10, total: 100})
+const page = reactive({current: 1, limit: 10, total: 0})
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '60px', type: 'number', fixed: 'left'},
@@ -343,9 +342,7 @@ const queryDataSource = async () => {
   await apiQueryUser(data).then((res: DataResult) => {
     let {code, data, total, message} = res
     if (code === 0) {
-      if (page.current == 1) {
-        page.total = total
-      }
+      page.total = total
       dataSource.value = data
       selectedKeys.value = []
     } else {

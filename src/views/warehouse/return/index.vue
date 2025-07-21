@@ -342,7 +342,14 @@ import {onMounted, reactive, ref} from 'vue'
 import {apiQueryShop} from "@/api/module/shop";
 import {layer} from "@layui/layui-vue";
 import {getShopQueryBody} from "@/types/shop";
-import {convertTime} from "@/utils/globalFunctions";
+import {
+  convertTime,
+  getProductPartStatus,
+  getQualityType,
+  getRepairStatus,
+  getStatus,
+  getWarehouseName
+} from "@/utils/globalFunctions";
 import {
   getBackQueryBody,
   saveProductPartBody, setProductPartCountBody,
@@ -373,106 +380,49 @@ const selectAllChange = () => {
     query.value.class_id = []
   }
 }
-const getRepairStatus = (repair_status: number) => {
-  switch (repair_status) {
-    case 0:
-      return "待检测";
-    case 1:
-      return "已检测";
-    case 2:
-      return "待维修";
-    case 3:
-      return "已维修";
-    default:
-      return "未知";
 
-  }
-}
 
-const getStatus = (status: number) => {
-  switch (status) {
-    case 0:
-      return "待确认";
-    case 1:
-      return "已确认";
-    case 2:
-      return "已入库";
-    default:
-      return "未知";
-  }
-}
-const getQualityType = (quality_type: number) => {
-  switch (quality_type) {
-    case 0:
-      return "待定";
-    case 1:
-      return "正品";
-    case 2:
-      return "次品";
-    case 3:
-      return "二手销售";
-    case 4:
-      return "报废";
-    default:
-      return "未知";
-
-  }
-}
-
-const getWarehouseName = (warehouse_name: number) => {
-  switch (warehouse_name) {
-    case 0:
-      return "待定";
-    case 1:
-      return "正品仓";
-    case 2:
-      return "次品仓";
-    case 3:
-      return "报废仓";
-    case 4:
-      return "次转正仓";
-    default:
-      return "未知";
-
-  }
-}
-
-const getProductPartStatus = (status: number) => {
-  switch (status) {
-    case 0:
-      return "未使用";
-    case 1:
-      return "已使用";
-    default:
-      return "未知";
-  }
-}
 
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '60px', type: 'number', fixed: 'left'},
   {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left', hide: true},
-  {title: '退货状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status'},
-  {title: '订单编号', width: '200px', key: 'order_no', sort: 'desc'},
-  {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
-  {title: '物流单号', width: '200px', key: 'logistics_no', sort: 'desc'},
-  {title: '店铺名称', width: '250px', key: 'shop', sort: 'desc'},
-  {title: '仓库名称', width: '160px', key: 'warehouse_name', sort: 'desc', customSlot: 'warehouse_name'},
-  {title: '产品型号', width: '150px', key: 'product_model', sort: 'desc'},
-  {title: '品质类型', width: '160px', key: 'quality_type', sort: 'desc', customSlot: 'quality_type'},
-  {title: '产品数量', width: '150px', key: 'count', sort: 'desc', hide: true},
-  {title: '产品名称', width: '150px', key: 'product_name', sort: 'desc'},
-  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
-  {title: '维修状态', width: '100px', key: 'repair_status', sort: 'desc', customSlot: 'repair_status'},
-  {title: '溯源码', width: '160px', key: 'product_code', sort: 'desc'},
-  {title: '托盘编号', width: '120px', key: 'tray_no', sort: 'desc'},
-  {title: '确认时间', width: '160px', key: 'confirm_time', sort: 'desc', customSlot: 'confirm_time'},
-  {title: '入库时间', width: '160px', key: 'put_in_warehouse_time', sort: 'desc', customSlot: 'put_in_warehouse_time'},
-  {title: '维修完成时间', width: '160px', key: 'complete_time', sort: 'desc', customSlot: 'complete_time'},
-  {title: '更新时间', width: '160px', key: 'update_time', sort: 'desc', customSlot: 'update_time'},
-  {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc'},
-  {title: '创建时间', width: '160px', key: 'create_time', sort: 'desc', customSlot: 'create_time'},
-  {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc'},
+  {title: '退货状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status', resize: true},
+  {title: '订单编号', width: '200px', key: 'order_no', sort: 'desc', resize: true},
+  {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc', resize: true},
+  {title: '物流单号', width: '200px', key: 'logistics_no', sort: 'desc', resize: true},
+  {title: '店铺名称', width: '250px', key: 'shop', sort: 'desc', resize: true},
+  {title: '客服备注', width: '250px', key: 'kf_remark', sort: 'desc', resize: true},
+  {title: '仓库名称', width: '160px', key: 'warehouse_name', sort: 'desc', customSlot: 'warehouse_name', resize: true},
+  {title: '产品型号', width: '150px', key: 'product_model', sort: 'desc', resize: true},
+  {title: '品质类型', width: '160px', key: 'quality_type', sort: 'desc', customSlot: 'quality_type', resize: true},
+  {title: '产品数量', width: '150px', key: 'count', sort: 'desc', hide: true, resize: true},
+  {title: '产品名称', width: '150px', key: 'product_name', sort: 'desc', resize: true},
+  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc', resize: true},
+  {title: '维修状态', width: '100px', key: 'repair_status', sort: 'desc', customSlot: 'repair_status', resize: true},
+  {title: '溯源码', width: '160px', key: 'product_code', sort: 'desc', resize: true},
+  {title: '托盘编号', width: '120px', key: 'tray_no', sort: 'desc', resize: true},
+  {title: '确认时间', width: '160px', key: 'confirm_time', sort: 'desc', customSlot: 'confirm_time', resize: true},
+  {
+    title: '入库时间',
+    width: '160px',
+    key: 'put_in_warehouse_time',
+    sort: 'desc',
+    customSlot: 'put_in_warehouse_time',
+    resize: true
+  },
+  {
+    title: '维修完成时间',
+    width: '160px',
+    key: 'complete_time',
+    sort: 'desc',
+    customSlot: 'complete_time',
+    resize: true
+  },
+  {title: '更新时间', width: '160px', key: 'update_time', sort: 'desc', customSlot: 'update_time', resize: true},
+  {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc', resize: true},
+  {title: '创建时间', width: '160px', key: 'create_time', sort: 'desc', customSlot: 'create_time', resize: true},
+  {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc', resize: true},
   {
     title: '操作',
     width: '120px',
@@ -594,7 +544,7 @@ const setProductTray = async (tray_no: string) => {
 }
 
 const setRowWarehouseNo = (id_list: Array<number>, warehouse_no: string) => {
-  for (let i = 0; i < warehouse_no.length; i++) {
+  for (let i = 0; i < id_list.length; i++) {
     let index = getCurrentRowIndex(id_list[i])
     if (index === -1) {
       continue

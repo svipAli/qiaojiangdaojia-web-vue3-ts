@@ -218,7 +218,7 @@
           {{ getRepairStatus(data.repair_status) }}
         </template>
         <template #repair_type="{ data }">
-          {{ getRepairType(data.repair_type) }}
+          {{ getQualityType(data.repair_type) }}
         </template>
         <template #quality_type="{ data }">
           {{ getQualityType(data.quality_type) }}
@@ -289,7 +289,14 @@ import {onMounted, reactive, ref} from 'vue'
 import {apiQueryShop} from "@/api/module/shop";
 import {layer} from "@layui/layui-vue";
 import {getShopQueryBody} from "@/types/shop";
-import {convertTime} from "@/utils/globalFunctions";
+import {
+  convertTime,
+  getProductPartStatus,
+  getQualityType,
+  getRepairStatus,
+  getStatus,
+  getWarehouseName
+} from "@/utils/globalFunctions";
 import {
   getBackQueryBody,
 } from "@/types/warehouse-return";
@@ -306,93 +313,6 @@ defineOptions({
   name: 'WarehouseRepair'
 })
 
-
-const getRepairType = (repair_type: number) => {
-  switch (repair_type) {
-    case 0:
-      return "待维修";
-    case 1:
-      return "换包装维修";
-    case 2:
-      return "拆机维修";
-    default:
-      return "未知";
-
-  }
-}
-const getStatus = (status: number) => {
-  switch (status) {
-    case 0:
-      return "待确认";
-    case 1:
-      return "已确认";
-    case 2:
-      return "已入库";
-    default:
-      return "未知";
-  }
-}
-const getRepairStatus = (repair_status: number) => {
-  switch (repair_status) {
-    case 0:
-      return "待检测";
-    case 1:
-      return "已检测";
-    case 2:
-      return "待维修";
-    case 3:
-      return "已维修";
-    default:
-      return "未知";
-
-  }
-}
-const getQualityType = (quality_type: number) => {
-  switch (quality_type) {
-    case 0:
-      return "待定";
-    case 1:
-      return "正品";
-    case 2:
-      return "次品";
-    case 3:
-      return "二手销售";
-    case 4:
-      return "报废";
-    default:
-      return "未知";
-
-  }
-}
-
-const getWarehouseName = (warehouse_name: number) => {
-  switch (warehouse_name) {
-    case 0:
-      return "待定";
-    case 1:
-      return "正品仓";
-    case 2:
-      return "次品仓";
-    case 3:
-      return "报废仓";
-    case 4:
-      return "次转正仓";
-    default:
-      return "未知";
-
-  }
-}
-
-const getProductPartStatus = (status: number) => {
-  switch (status) {
-    case 0:
-      return "未使用";
-    case 1:
-      return "已使用";
-    default:
-      return "未知";
-  }
-}
 
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
