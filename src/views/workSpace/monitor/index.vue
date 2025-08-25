@@ -106,92 +106,6 @@
           </lay-row>
         </lay-card>
       </lay-col>
-      <lay-col :md="6" :sm="6" :xs="6">
-        <lay-card style="height: 300px">
-          <template #title>用户满意度</template>
-          <div class="user-satisfaction">
-            <div style="margin-top: 15px">856</div>
-            <div>
-              <lay-icon
-                type="layui-icon-face-smile"
-                size="50px"
-                color="#5FB878"
-              ></lay-icon>
-              <div style="font-size:8px;color#ddd;margin-top:12px">
-                正面评价
-              </div>
-            </div>
-            <div style="color: #52c41a; margin-top: 15px">82%</div>
-          </div>
-          <lay-line></lay-line>
-          <div class="user-satisfaction">
-            <div style="margin-top: 15px">856</div>
-            <div>
-              <lay-icon
-                type="layui-icon-face-cry"
-                size="50px"
-                color="#f7454e"
-              ></lay-icon>
-              <div style="font-size:8px;color#ddd;margin-top:12px">
-                负面评论
-              </div>
-            </div>
-            <div style="color: #f7454e; margin-top: 15px">7%</div>
-          </div>
-        </lay-card>
-      </lay-col>
-      <lay-col :md="6" :sm="6" :xs="6">
-        <lay-card style="height: 300px">
-          <template #title>用户活跃度</template>
-          <lay-row>
-            <lay-col :md="18" :sm="18" :xs="18">
-              <div style="stack-progress">
-                <div class="green-progress">
-                  <lay-progress
-                    percent="70"
-                    circle
-                    :circleSize="170"
-                    :circleWidth="11"
-                    style="margin-right: 10px"
-                  ></lay-progress>
-                </div>
-                <div class="blue-progress">
-                  <lay-progress
-                    percent="60"
-                    circle
-                    :circleSize="120"
-                    :circleWidth="10"
-                    theme="blue"
-                    style="margin-right: 10px"
-                  ></lay-progress>
-                </div>
-                <div class="red-progress">
-                  <lay-progress
-                    percent="35"
-                    circle
-                    :circleSize="70"
-                    :circleWidth="8"
-                    theme="red"
-                    style="margin-right: 10px"
-                  ></lay-progress>
-                </div>
-              </div>
-              &nbsp;
-            </lay-col>
-            <lay-col :md="6" :sm="6" :xs="6">
-              <div class="desc">
-                <div>
-                  <lay-badge theme="green" type="dot"></lay-badge> 活跃率:70%
-                </div>
-                <div>
-                  <lay-badge theme="blue" type="dot"></lay-badge> 留存率:60%
-                </div>
-                <div><lay-badge type="dot"></lay-badge> 跳出率:35%</div>
-              </div>
-            </lay-col>
-          </lay-row>
-        </lay-card>
-      </lay-col>
     </lay-row>
   </lay-container>
 </template>
@@ -386,9 +300,9 @@ export default defineComponent({
       userDistributionDomChart.on('dblclick', function (param) {
         let index = provincesText.indexOf(param.name)
         if (index != -1) {
-          ///todo   如何动态的获取moudel/province/下的 province[index].json文件 ?
-          // echarts.registerMap(param.name, province[index])
-          // 更新echarts 视图
+          //todo   如何动态的获取moudel/province/下的 province[index].json文件 ?
+          echarts.registerMap(param.name, province[index])
+          //更新echarts 视图
         }
       })
       userDistributionOption &&

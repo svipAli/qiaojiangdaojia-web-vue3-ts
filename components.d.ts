@@ -62,8 +62,6 @@ declare module 'vue' {
     LayTable: typeof import('@layui/layui-vue')['LayTable']
     LayTag: typeof import('@layui/layui-vue')['LayTag']
     LayTextarea: typeof import('@layui/layui-vue')['LayTextarea']
-    LayTimeline: typeof import('@layui/layui-vue')['LayTimeline']
-    LayTimelineItem: typeof import('@layui/layui-vue')['LayTimelineItem']
     LayTooltip: typeof import('@layui/layui-vue')['LayTooltip']
     LayTree: typeof import('@layui/layui-vue')['LayTree']
     LayTreeSelect: typeof import('@layui/layui-vue')['LayTreeSelect']

@@ -61,6 +61,19 @@ export const getQualityType = (quality_type: number) => {
     }
 }
 
+export const getRepairType = (repair_type: number) => {
+    switch (repair_type) {
+        case 0:
+            return "待维修";
+        case 1:
+            return "换包装维修";
+        case 2:
+            return "拆机维修";
+        default:
+            return "未知";
+    }
+}
+
 export const getRepairStatus = (repair_status: number) => {
     switch (repair_status) {
         case 0:

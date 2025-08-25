@@ -55,7 +55,6 @@ class Http {
                     break;
             }
         }, error => {
-            console.log(error)
             if (!error.response) {
                 layer.msg('请求失败！', {icon: 2, time: 3000})
                 return Promise.reject(error);

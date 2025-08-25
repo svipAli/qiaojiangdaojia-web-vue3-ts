@@ -78,14 +78,15 @@ export default defineComponent({
       img_code: '',
       code_key: '',
     })
-
     const loginSubmit = async () => {
       login(loginForm).then((data) => {
         try {
           if (data.detail.length > 0) {
             layer.msg(data.detail, {icon: 2})
           }
-        }catch (e) {}
+        }catch (e) {
+
+        }
         try {
           let access_token = data.access_token
           let token_type = data.token_type

@@ -10,6 +10,8 @@ export interface editTrayBody {
 
 export interface getTrayQueryBody extends addTrayBody {
     status: number;
+    page: number;
+    limit: number;
 }
 
 export interface updateTrayConfigBody {

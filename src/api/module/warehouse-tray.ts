@@ -30,3 +30,7 @@ export const apiUpdateTrayConfig = (data: updateTrayConfigBody) => {
 export const apiExportTrayPart = (data: exportTrayPartBody) => {
     return Http.get('/export_tray_part', data)
 }
+
+export const apiExportTrayPartDetail = (data: exportTrayPartBody) => {
+    return Http.get('/export_tray_part_detail', data)
+}

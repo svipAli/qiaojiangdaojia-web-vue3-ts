@@ -49,11 +49,14 @@
     <lay-card>
       <lay-table
           height="650px"
+          :page="page"
           :columns="columns"
           :loading="loading"
           :data-source="dataSource"
           :default-toolbar="true"
-          v-model:selectedKeys="selectedKeys">
+          v-model:selectedKeys="selectedKeys"
+          @change="queryDataSource"
+      >
         <template #toolbar>
           <lay-button type="primary" size="sm" @click="changeVisible('新增',null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
@@ -68,6 +71,7 @@
           <lay-button size="xs" type="normal" @click="changeVisible('编辑',row)">编辑</lay-button>
           <lay-button size="xs" type="primary" @click="changeVisible2(row)">配置</lay-button>
           <lay-button size="xs" type="primary" @click="exportTrayPart(row)">导出配件</lay-button>
+          <lay-button size="xs" type="primary" @click="exportTrayPartDetail(row)">导出明细</lay-button>
           <lay-popconfirm
               content="确定要删除吗?"
               @confirm="delTray([row.id])"
@@ -142,7 +146,7 @@
   </lay-layer>
 </template>
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import {layer} from "@layui/layui-vue";
 import {convertTime} from "@/utils/globalFunctions";
 import {
@@ -155,7 +159,7 @@ import {
 import {
   apiAddTray,
   apiDelTray, apiEditTray,
-  apiExportTrayPart,
+  apiExportTrayPart, apiExportTrayPartDetail,
   apiQueryTray,
   apiUpdateTrayConfig
 } from "@/api/module/warehouse-tray";
@@ -163,6 +167,7 @@ import {
 defineOptions({
   name: 'WarehouseTray'
 })
+const page = reactive({current: 1, limit: 10, total: 0})
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left'},
@@ -188,7 +193,7 @@ const columns = ref([
   {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc'},
   {
     title: '操作',
-    width: '220px',
+    width: '280px',
     customSlot: 'operator',
     key: 'operator',
     fixed: 'right'
@@ -284,6 +289,15 @@ const exportTrayPart = async (row: any) => {
   })
 }
 
+const exportTrayPartDetail = async (row: any) => {
+  let data: exportTrayPartBody = {
+    id: row.id,
+  }
+  await apiExportTrayPartDetail(data).then(res => {
+    downloadBlob(res, `【托盘】${row.tray_no}明细导出.csv`)
+  })
+}
+
 const resetModel = () => {
   model.value = {
     tray_no: '',
@@ -313,7 +327,6 @@ const addTray = async () => {
   await apiAddTray(data).then(res => {
     let {code, message} = res
     if (code === 0) {
-      layer.msg(message)
       visible.value = false
       queryDataSource()
     }
@@ -333,14 +346,17 @@ const toReset = () => {
 const queryDataSource = async () => {
   loading.value = true
   let data: getTrayQueryBody = {
+    page: page.current,
+    limit: page.limit,
     tray_no: query.value.tray_no,
     remark: query.value.remark,
     status: query.value.status
   }
-  await apiQueryTray(data).then((res: Result) => {
-    let {code, data, message} = res
+  await apiQueryTray(data).then((res: DataResult) => {
+    let {code, data, message, total} = res
     if (code === 0) {
       dataSource.value = data
+      page.total = total
       selectedKeys.value = []
     } else {
       layer.msg(message, {icon: 3, time: 2000})

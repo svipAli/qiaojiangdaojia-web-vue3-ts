@@ -32,7 +32,7 @@ export default [
             {
                 path: '/workspace/analysis',
                 component: () => import('../../views/workSpace/analysis/index.vue'),
-                meta: {title: '分析页', requireAuth: true},
+                meta: {title: '安装数据', requireAuth: true},
             },
             {
                 path: '/workspace/monitor',
@@ -96,22 +96,10 @@ export default [
         meta: {title: '巧匠安维'},
         children: [
             {
-                path: '/qiaojiang/info/worker',
-                name: 'QiaojiangInfoWorker',
-                component: () => import('../../views/qiaojiang/info_worker/index.vue'),
-                meta: {title: 'PLUS打卡', requireAuth: true},
-            },
-            {
                 path: '/qiaojiang/invoice',
                 name: 'QiaojiangInvoice',
                 component: () => import('../../views/qiaojiang/invoice/index.vue'),
                 meta: {title: '发票管理', requireAuth: true},
-            },
-            {
-                path: '/qiaojiang/pluslocation',
-                name: 'QiaojiangPlusLocation',
-                component: () => import('../../views/qiaojiang/pluslocation/index.vue'),
-                meta: {title: 'PLUS打卡', requireAuth: true},
             },
         ]
     },

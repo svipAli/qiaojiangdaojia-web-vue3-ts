@@ -230,6 +230,10 @@
             <lay-icon class="layui-icon-template-one"></lay-icon>
             入库反确认
           </lay-button>
+          <lay-button size="sm" @click="exportBackProductPart(selectedKeys)">
+            <lay-icon class="layui-icon-template-one"></lay-icon>
+            次品明细导出
+          </lay-button>
         </template>
         <template v-slot:operator="{ row }">
           <lay-button
@@ -316,10 +320,26 @@
     </lay-card>
   </lay-layer>
   <lay-layer v-model="addPartVisible" :title="partVisibleTitle" :area="['1000px', '750px']">
-    <div style="padding: 20px">
+    <lay-card>
+      <lay-form :model="searchPartForm">
+        <lay-row>
+          <lay-col :md="8">
+            <lay-form-item label="商品名称" prop="name">
+              <lay-input v-model="searchPartForm.product_model"/>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="4">
+            <lay-form-item label=" " label-width="10px">
+              <lay-button type="primary" @click="loadDataSource3(searchPartForm.product_model)">查询</lay-button>
+            </lay-form-item>
+          </lay-col>
+        </lay-row>
+      </lay-form>
+    </lay-card>
+    <div style="">
       <lay-card>
         <lay-table
-            :height="'630px'"
+            :height="'580px'"
             :columns="columns3"
             :loading="loading3"
             :default-toolbar="true"
@@ -358,7 +378,7 @@ import {
 import {
   apiBackProductPutInWarehouseNoCancel,
   apiBackProductPutInWarehouseNoConfirm,
-  apiDelProductPart,
+  apiDelProductPart, apiExportProductPart,
   apiGetProductPart,
   apiQueryBack,
   apiQueryProductPart,
@@ -380,8 +400,9 @@ const selectAllChange = () => {
     query.value.class_id = []
   }
 }
-
-
+const searchPartForm = ref({
+  product_model: ''
+})
 
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
@@ -492,6 +513,36 @@ const query = ref({
   warehouse_name: -1,
 })
 
+
+// 定义一个名为downloadBlob的函数，该函数接受一个Blob对象的内容和文件名作为参数，用于下载文件
+const downloadBlob = (content: any, fileName: any) => {
+  // 创建一个新的Blob对象，其内容为传入的Blob对象的内容
+  const blob = new Blob([content])
+  // 创建一个隐藏的a元素，用于模拟点击下载文件
+  const a = document.createElement('a')
+  // 设置下载的文件名为传入的fileName
+  a.download = fileName
+  // 将a元素隐藏起来
+  a.style.display = 'none'
+  // 将Blob对象转换为URL，作为a元素的href属性，实现下载功能
+  a.href = URL.createObjectURL(blob)
+  // 将a元素添加到文档的body中
+  document.body.appendChild(a)
+  // 模拟点击a元素，触发浏览器的下载功能
+  a.click()
+  // 释放URL.createObjectURL()创建的URL对象，避免内存泄漏
+  URL.revokeObjectURL(a.href)
+  // 从文档的body中移除a元素
+  document.body.removeChild(a)
+}
+
+
+const exportBackProductPart = async (id_list: Array<number>) => {
+  await apiExportProductPart(id_list).then(res => {
+    downloadBlob(res, `【次品】配件明细导出.csv`)
+  })
+}
+
 const changeProductPartCount = async (row: any) => {
   let data: setProductPartCountBody = {
     part_id: row.id,
@@ -562,6 +613,7 @@ const setbackProductWarehouseNo = (id_list: Array<number>, warehouse_no: string,
     if (code === 0) {
       layer.msg('操作成功')
       setRowWarehouseNo(id_list, warehouse_no)
+      selectedKeys.value = []
       layer.close(index)
     } else {
       layer.msg(message)
@@ -680,32 +732,18 @@ const searchPartVisible = (type: number) => {
   addPartVisible.value = !addPartVisible.value
   if (type === 0) {
     partVisibleTitle.value = '新增机器配件'
-    loadDataSource3()
+    searchPartForm.value.product_model = currentRow.value.product_model
+    loadDataSource3(currentRow.value.product_model)
   } else {
     partVisibleTitle.value = '新增通用配件'
-    loadDataSource3_()
+    searchPartForm.value.product_model = "通用维修配件"
+    loadDataSource3("通用维修配件")
   }
-
 }
 
-const loadDataSource3 = async () => {
-
+const loadDataSource3 = async (product_model: string) => {
   loading3.value = true
-  await apiQueryProductPart({id: currentRow.value.id}).then((res: Result) => {
-    let {code, data, message} = res
-    if (code === 0) {
-      dataSource3.value = data
-      selectedKeys3.value = []
-    } else {
-      layer.msg(message, {icon: 2, time: 2000})
-    }
-  })
-  loading3.value = false
-}
-
-const loadDataSource3_ = async () => {
-  loading3.value = true
-  await apiQueryProductPart({id: -1}).then((res: Result) => {
+  await apiQueryProductPart({product_model: product_model}).then((res: Result) => {
     let {code, data, message} = res
     if (code === 0) {
       dataSource3.value = data

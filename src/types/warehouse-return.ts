@@ -22,10 +22,15 @@ export interface getBackQueryBody {
 }
 
 export interface getProductPartBody {
+    product_model: string;
+}
+
+export interface getProductPartIdBody {
     id: number;
 }
 
-export interface saveProductPartBody extends getProductPartBody {
+export interface saveProductPartBody {
+    id: number;
     part_list: Array<number>;
 }
 

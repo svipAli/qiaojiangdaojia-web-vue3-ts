@@ -1,275 +1,315 @@
 <template>
   <lay-container :fluid="true" style="padding: 10px">
     <lay-row :space="10">
-      <lay-col :md="6" :sm="6" :xs="12">
-        <lay-card class="statistics">
-          <template #title>今日访问</template>
-          <template #extra>
-            <lay-badge theme="green">Hot</lay-badge>
-          </template>
-          <div class="statistics-body">
-            <lay-count-up :startVal="0" :endVal="3600" :decimalPlaces="2"></lay-count-up>
-          </div>
-          <template #footer>
-            访问趋势
-          </template>
-        </lay-card>
-      </lay-col>
-      <lay-col :md="6" :sm="6" :xs="12">
-        <lay-card class="statistics">
-          <template #title>提交次数</template>
-          <template #extra>
-            <lay-badge type="rim">Hot</lay-badge>
-          </template>
-          <div class="statistics-body">
-            <lay-count-up :startVal="0" :endVal="3600" :decimalPlaces="2"></lay-count-up>
-          </div>
-          <template #footer>
-            最近一月
-          </template>
-        </lay-card>
-      </lay-col>
-      <lay-col :md="6" :sm="6" :xs="12">
-        <lay-card class="statistics">
-          <template #title>下载数量</template>
-          <template #extra>
-            <lay-badge type="rim">Hot</lay-badge>
-          </template>
-          <div class="statistics-body">
-            <lay-count-up :startVal="0" :endVal="3600" :decimalPlaces="2"></lay-count-up>
-          </div>
-          <template #footer>
-            总下载量
-          </template>
-        </lay-card>
-      </lay-col>
-      <lay-col :md="6" :sm="6" :xs="12">
-        <lay-card class="statistics">
-          <template #title>流量统计</template>
-          <template #extra>
-            <lay-badge type="rim">Hot</lay-badge>
-          </template>
-          <div class="statistics-body">
-            <lay-count-up :startVal="0" :endVal="3600" :decimalPlaces="2"></lay-count-up>
-          </div>
-          <template #footer>
-            最近一年
-          </template>
-        </lay-card>
-      </lay-col>
-      <lay-col :md="24" :sm="24" :xs="24">
+      <lay-col :md="6" :sm="12" :xs="24">
         <lay-card>
-          <template #title>我的觉悟</template>
-          <template #extra>
-            <lay-badge type="rim">昨日</lay-badge>
-            <lay-badge type="rim">今日</lay-badge>
-          </template>
-          <lay-row>
-            <lay-col :md="18">
-              <div id="main" ref="mainRef"></div>
-            </lay-col>
-            <lay-col :md="6">
-              <div style="padding-top:42px;padding-left: 42px;padding-right: 42px;padding-bottom: 10px;">
-                <lay-timeline>
-                  <lay-timeline-item title="工专路 0 号店" simple>
-                    <template #dot>
-                      <lay-icon type="layui-icon-face-smile" color="#009688"></lay-icon>
-                    </template>
-                  </lay-timeline-item>
-                  <lay-timeline-item title="工专路 1 号店" simple></lay-timeline-item>
-                  <lay-timeline-item title="工专路 2 号店" simple></lay-timeline-item>
-                  <lay-timeline-item title="工专路 3 号店" simple></lay-timeline-item>
-                  <lay-timeline-item title="工专路 4 号店" simple></lay-timeline-item>
-                  <lay-timeline-item title="工专路 5 号店" simple></lay-timeline-item>
-                  <lay-timeline-item title="工专路 5 号店" simple></lay-timeline-item>
-                </lay-timeline>
-              </div>
-            </lay-col>
-          </lay-row>
+          <template #title>PLUS-上海区域</template>
+          <div class="userDistribution" ref="shanghaiRef"></div>
         </lay-card>
       </lay-col>
-      <lay-col :md="8" :sm="8" :xs="24">
+      <lay-col :md="6" :sm="12" :xs="24">
         <lay-card>
-          <template #title>留言面板</template>
-          <ul class="leaving-messages">
-            <li>
-              <h3>张爱玲</h3>
-              <p>于千万人之中遇到你所要遇到的人，于千万年之中，时间的无涯的荒野中，没有早一步，也没有晚一步，刚巧赶上了，那也没有别的话好说，唯有轻轻的问一声：“噢，原来你也在这里？”。</p>
-              <span>5月30日 00:00</span>
-            </li>
-            <li>
-              <h3>王羲之</h3>
-              <p>但我只要够快就行了对不对？你就算有无限量的子弹，你换弹匣也需要时间，我只有那么一瞬间，把你打翻，然后就拍屁股走人。</p>
-              <span>5月30日 00:00</span>
-            </li>
-            <li>
-              <h3>诸葛亮</h3>
-              <p>皓首匹夫！苍髯老贼！你枉活九十有六，一生未立寸功，只会摇唇鼓舌！助曹为虐！一条断脊之犬，还敢在我军阵前狺狺狂吠，我从未见过有如此厚颜无耻之人！</p>
-              <span>5月30日 00:00</span>
-            </li>
-          </ul>
+          <template #title>PLUS-杭州区域</template>
+          <div class="userDistribution" ref="hangzhouRef"></div>
         </lay-card>
       </lay-col>
-      <lay-col :md="8" :sm="8" :xs="24">
+      <lay-col :md="6" :sm="12" :xs="24">
         <lay-card>
-          <template #title>签到统计</template>
-          <lay-table :columns="columns21" :data-source="dataSource21">
-            <template #state="{ data }">
-              <span v-if="data.state == 0" style="color:#FFB800">进行中</span>
-              <span v-else-if="data.state == 1" style="color:#5FB878">已完成</span>
-              <span v-else style="color:#FF5722">已预期</span>
-            </template>
-          </lay-table>
+          <template #title>PLUS-南京区域</template>
+          <div class="userDistribution" ref="nanjingRef"></div>
         </lay-card>
       </lay-col>
-      <lay-col :md="8" :sm="8" :xs="24">
+      <lay-col :md="6" :sm="12" :xs="24">
         <lay-card>
-          <template #title>本月目标</template>
-          <div class="target">
-            <lay-progress :percent="90" circle :circleWidth="15" :show-text="true" text="已完成">
-              <template v-slot:text="{}">
-                <span></span>
-              </template>
-            </lay-progress>
-            <p class="target-title">{{ 100 > 70 ? '恭喜，本月目标已达标！' : '加油， 就快达标了！' }}</p>
-          </div>
+          <template #title>PLUS-常州区域</template>
+          <div class="userDistribution" ref="changzhouRef"></div>
         </lay-card>
       </lay-col>
     </lay-row>
+    <lay-row :space="10">
+      <lay-col :md="12" :sm="12" :xs="24">
+        <lay-card>
+          <template #title>PLUS-工单数据总览</template>
+          <div class="awData" ref="awData"></div>
+        </lay-card>
+      </lay-col>
+      <lay-col :md="12" :sm="12" :xs="24">
+        <lay-card>
+          <template #title>PLUS-超时总览</template>
+          <div class="awData" ref="timeOutData"></div>
+        </lay-card>
+      </lay-col>
+    </lay-row>
+    <lay-row :space="10">
+      <lay-col :md="24" :sm="24" :xs="24">
+        <lay-card>
+          <template #title>PLUS-工程师当日工作量</template>
+          <div class="awData" ref="awWorkerData"></div>
+        </lay-card>
+      </lay-col>
+
+    </lay-row>
   </lay-container>
 </template>
-<script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+<script lang="ts" setup>
+import {ref, onMounted, reactive} from 'vue'
+import * as echarts from 'echarts'
+import nanjing from './moudel/citys/320100.json'
+import changzhou from './moudel/citys/320400.json'
+import hangzhou from './moudel/citys/330100.json'
+import shanghai from './moudel/province/shanghai.json'
+import {apiGetAwData} from "@/api/module/analysis";
 
-import * as echarts from 'echarts';
+const shanghaiRef = ref()
+const nanjingRef = ref()
+const changzhouRef = ref()
+const hangzhouRef = ref()
+const awData = ref()
+const awWorkerData = ref()
+const timeOutData = ref()
+const setAwData = (data: any) => {
+  let name_list: string[] = []
+  let value_list: number[] = []
+  Object.keys(data).forEach(key => {
+    name_list.push(key)
+    value_list.push(data[key])
+  });
+  let awDom = awData.value
+  let awEchart = echarts.init(awDom)
+  let option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: name_list,
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: 'Direct',
+        type: 'bar',
+        barWidth: '60%',
+        data: value_list
+      }
+    ],
+    label: {
+      show: true,
+      position: 'top'
+    }
+  };
+  option && awEchart.setOption(option)
+}
+const setAwWorkerData = (data: any) => {
+  let worker_name_list: string[] = []
+  let worker_value_list: number[] = []
+  Object.keys(data).forEach(key => {
+    worker_name_list.push(key)
+    worker_value_list.push(data[key])
+  });
 
-export default defineComponent({
-	name: 'Analysis',
-  setup() {
-
-    const mainRef = ref()
-    onMounted(() => {
-      var chartDom = mainRef.value;
-      // @ts-ignore
-      var myChart = echarts.init(chartDom);
-      var option = {
-        xAxis: {
-          type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Bai', 'Fan', 'Yue', 'Qian']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        grid: {
-          x: '50px',
-          y: '50px',
-          x2: '50px',
-          y2: '50px',
-        },
-        series: [
-          {
-            data: [120, 200, 150, 80, 70, 110, 130, 50, 40, 70, 100],
-            type: 'bar',
-            showBackground: true,
-            backgroundStyle: {
-              color: 'rgba(180, 180, 180, 0.2)'
-            },
-            itemStyle: {
-              normal: {
-                color: '#009688'
-              },
-            }
-          }
-        ]
-      };
-      option && myChart.setOption(option);
+  let option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: [
+      {
+        type: 'category',
+        data: worker_name_list,
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    series: [
+      {
+        name: 'Direct',
+        type: 'bar',
+        barWidth: '60%',
+        data: worker_value_list
+      }
+    ],
+    label: {
+      show: true,
+      position: 'top'
+    }
+  };
+  let awWorkerDom = awWorkerData.value
+  let awWorkerEchart = echarts.init(awWorkerDom)
+  option && awWorkerEchart.setOption(option)
+}
+const setTimeOutData = (data: any) => {
+  let data_list: any[] = []
+  Object.keys(data).forEach(key => {
+    data_list.push({
+      name: key,
+      value: data[key]
     })
-
-    const columns21 = [
+  });
+  let option = {
+    title: {
+      text: '超时总览',
+      left: 'center'
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left'
+    },
+    series: [
       {
-        type: "number",
-      },
-      {
-        title: "任务内容",
-        key: "task",
-      }, {
-        title: "计划时间",
-        key: "time"
-      }, {
-        title: "完成情况",
-        key: "state",
-        customSlot: "state"
+        name: '超时总览',
+        type: 'pie',
+        radius: '50%',
+        data: data_list,
+        label: {
+          formatter: '{b}: {c} ({d}%)'
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowOffsetX: 0,
+            shadowColor: 'rgba(0, 0, 0, 0.5)'
+          }
+        }
       }
     ]
+  };
+  let timeOutDom = timeOutData.value
+  let timeOutEchart = echarts.init(timeOutDom)
+  option && timeOutEchart.setOption(option)
 
-    const dataSource21 = [
-      { task: "睡觉", time: "两小时", state: "1" },
-      { task: "吃饭", time: "两小时", state: "2" },
-      { task: "吃饭", time: "两小时", state: "1" },
-      { task: "睡觉", time: "两小时", state: "1" },
-      { task: "睡觉", time: "两小时", state: "2" },
-      { task: "上班", time: "两小时", state: "1" },
-      { task: "上班", time: "两小时", state: "1" },
-      { task: "上班", time: "两小时", state: "0" },
-      { task: "睡觉", time: "两小时", state: "0" },
-      { task: "睡觉", time: "两小时", state: "0" }
+}
+const setUserDistributionOption = (area: string, data: any) => {
+  let userDistributionOption = {
+    tooltip: {
+      trigger: 'item'
+    },
+    dataRange: {
+      x: 'left',
+      y: 'bottom',
+      itemWidth: 20,
+      itemHeight: 14,
+      splitList: [
+        {start: 10, label: '>10个', color: '#3a94e5'},
+        {start: 5, end: 10, label: '5-10个', color: '#68b1ec'},
+        {start: 3, end: 5, label: '3-5个', color: '#9cd3f4'},
+        {start: 2, end: 3, label: '2-3个', color: '#c7eefb'},
+        {end: 2, label: '<2个', color: '#e1f4fc'}
+      ]
+    },
+    roamController: {
+      show: true,
+      x: 'right',
+      mapTypeControl: {
+        shanghai: true,
+      }
+    },
+    series: [
+      {
+        name: '剩余数量',
+        type: 'map',
+        mapType: area,
+        roam: false,
+        itemStyle: {
+          emphasis: {label: {show: true}}
+        },
+        data: data
+      }
     ]
+  }
+  if (area === 'shanghai') {
+    let userDistributionDom = shanghaiRef.value
+    echarts.registerMap('shanghai', shanghai as any)
+    let userDistributionDomChart = echarts.init(userDistributionDom)
+    userDistributionOption &&
+    userDistributionDomChart.setOption(userDistributionOption)
+  } else if (area === 'changzhou') {
+    let userDistributionDom = changzhouRef.value
+    echarts.registerMap('changzhou', changzhou as any)
+    let userDistributionDomChart = echarts.init(userDistributionDom)
+    userDistributionOption &&
+    userDistributionDomChart.setOption(userDistributionOption)
+  } else if (area === 'hangzhou') {
+    let userDistributionDom = hangzhouRef.value
+    echarts.registerMap('hangzhou', hangzhou as any)
+    let userDistributionDomChart = echarts.init(userDistributionDom)
+    userDistributionOption &&
+    userDistributionDomChart.setOption(userDistributionOption)
+  } else if (area === 'nanjing') {
+    let userDistributionDom = nanjingRef.value
+    echarts.registerMap('nanjing', nanjing as any)
+    let userDistributionDomChart = echarts.init(userDistributionDom)
+    userDistributionOption &&
+    userDistributionDomChart.setOption(userDistributionOption)
+  }
+}
+const getAwData = async () => {
+  await apiGetAwData().then((res) => {
+    let {data} = res
+    let area_count_data = data.area_count_data
+    setUserDistributionOption('shanghai', area_count_data.shanghai)
+    setUserDistributionOption('hangzhou', area_count_data.hangzhou)
+    setUserDistributionOption('changzhou', area_count_data.changzhou)
+    setUserDistributionOption('nanjing', area_count_data.nanjing)
+    setAwData(data.incident_status_data)
+    setAwWorkerData(data.worker_data)
+    setTimeOutData(data.time_out_data)
+  })
+}
+const setTimeOutDo = () => {
+  setInterval(getAwData, 10000)
+}
+onMounted(() => {
+  getAwData()
+  setTimeOutDo()
+})
 
-    return {
-      mainRef,
-      columns21,
-      dataSource21
-    };
-  },
-});
 </script>
 
 <style lang="less" scoped>
-#main {
+.userDistribution {
   width: 100%;
-  height: 410px;
+  height: 540px;
 }
 
-.leaving-messages {
-  li {
-    position: relative;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-
-    h3 {
-      padding-bottom: 5px;
-      font-weight: 700;
-    }
-
-    p {
-      font-size: 14px;
-      padding-bottom: 10px;
-    }
-
-    >span {
-      color: #999;
-    }
-  }
-}
-
-.target {
+.awData {
   width: 100%;
-  height: 440px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+  height: 300px;
 }
 
-.target-title {
-  margin: 20px;
-}
-
-.statistics {
-  font-size: 24px !important;
-}
-
-.statistics-body {
-  padding: 14px 0;
-}
 </style>

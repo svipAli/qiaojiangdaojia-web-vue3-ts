@@ -3,7 +3,7 @@ import {
     getProductPartBody,
     getBackQueryBody,
     saveProductPartBody,
-    setProductPartStatusBody, setProductTrayBody, setProductPartCountBody
+    setProductPartStatusBody, setProductTrayBody, setProductPartCountBody, getProductPartIdBody
 } from "@/types/warehouse-return";
 
 export const apiQueryBack = (data: getBackQueryBody) => {
@@ -18,7 +18,7 @@ export const apiSaveProductPart = (data:saveProductPartBody) => {
     return Http.post('/save_product_part', data)
 }
 
-export const apiGetProductPart = (data:getProductPartBody) => {
+export const apiGetProductPart = (data:getProductPartIdBody) => {
     return Http.get('/get_product_part', data)
 }
 
@@ -45,4 +45,8 @@ export const apiBackProductPutInWarehouseNoConfirm = (data:Array<number>) => {
 
 export const apiBackProductPutInWarehouseNoCancel = (data:Array<number>) => {
     return Http.post('/back_product_put_in_warehouse_no_cancel', data)
+}
+
+export const apiExportProductPart = (data:Array<number>) => {
+    return Http.post('/export/back_product_part_detail', data)
 }

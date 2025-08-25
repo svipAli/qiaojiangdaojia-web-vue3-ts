@@ -218,7 +218,7 @@
           {{ getRepairStatus(data.repair_status) }}
         </template>
         <template #repair_type="{ data }">
-          {{ getQualityType(data.repair_type) }}
+          {{ getRepairType(data.repair_type) }}
         </template>
         <template #quality_type="{ data }">
           {{ getQualityType(data.quality_type) }}
@@ -293,7 +293,7 @@ import {
   convertTime,
   getProductPartStatus,
   getQualityType,
-  getRepairStatus,
+  getRepairStatus, getRepairType,
   getStatus,
   getWarehouseName
 } from "@/utils/globalFunctions";
