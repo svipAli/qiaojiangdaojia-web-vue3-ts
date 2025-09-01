@@ -177,6 +177,15 @@
             </lay-form-item>
           </lay-col>
           <lay-col :md="4">
+            <lay-form-item label="是否返厂" label-width="80">
+              <lay-select v-model="query.is_back_to_factory" style="width: 100px">
+                <lay-select-option :value="-1" label="全部"></lay-select-option>
+                <lay-select-option :value="1" label="是"></lay-select-option>
+                <lay-select-option :value="0" label="否"></lay-select-option>
+              </lay-select>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="4">
             <lay-form-item label-width="20">
               <lay-button
                   style="margin-left: 20px"
@@ -240,6 +249,9 @@
         </template>
         <template #put_in_warehouse_time="{ data }">
           {{ convertTime(data.put_in_warehouse_time) }}
+        </template>
+        <template #is_back_to_factory="{ data }">
+          {{ data.is_back_to_factory === 1 ? '是' : '否' }}
         </template>
       </lay-table>
     </lay-card>
@@ -326,6 +338,7 @@ const columns = ref([
   {title: '产品型号', width: '150px', key: 'product_model', sort: 'desc'},
   {title: '产品数量', width: '150px', key: 'count', sort: 'desc', hide: true},
   {title: '产品名称', width: '150px', key: 'product_name', sort: 'desc'},
+  {title: '次品备注', width: '250px', key: 'remark', sort: 'desc', resize: true},
   {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
   {title: '物流单号', width: '200px', key: 'logistics_no', sort: 'desc'},
   {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
@@ -335,6 +348,7 @@ const columns = ref([
   {title: '确认时间', width: '160px', key: 'confirm_time', sort: 'desc', customSlot: 'confirm_time'},
   {title: '入库时间', width: '160px', key: 'put_in_warehouse_time', sort: 'desc', customSlot: 'put_in_warehouse_time'},
   {title: '维修完成时间', width: '160px', key: 'complete_time', sort: 'desc', customSlot: 'complete_time'},
+  {title: '是否返厂', width: '120px', key: 'is_back_to_factory', sort: 'desc', customSlot: 'is_back_to_factory', resize: true},
   {title: '更新时间', width: '160px', key: 'update_time', sort: 'desc', customSlot: 'update_time'},
   {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc'},
   {title: '创建时间', width: '160px', key: 'create_time', sort: 'desc', customSlot: 'create_time'},
@@ -396,6 +410,7 @@ const query = ref({
   quality_type: -1,
   status: -1,
   warehouse_name: -1,
+  is_back_to_factory: -1,
 })
 
 const changeProductPartUserCount = async (row: any) => {
@@ -505,6 +520,7 @@ const toReset = () => {
     quality_type: -1,
     status: -1,
     warehouse_name: -1,
+    is_back_to_factory: -1
   }
 }
 
@@ -530,6 +546,7 @@ const queryDataSource = async () => {
     status: query.value.status,
     warehouse_name: query.value.warehouse_name,
     logistics_no: query.value.logistics_no,
+    is_back_to_factory: query.value.is_back_to_factory,
     page: page.current,
     limit: page.limit,
   }

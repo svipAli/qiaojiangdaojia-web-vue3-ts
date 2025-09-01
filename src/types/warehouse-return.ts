@@ -17,6 +17,7 @@ export interface getBackQueryBody {
     quality_type: number;
     status: number;
     warehouse_name: number;
+    is_back_to_factory: number;
     page: number;
     limit: number;
 }

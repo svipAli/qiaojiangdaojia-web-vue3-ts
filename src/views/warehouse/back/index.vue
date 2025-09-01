@@ -323,6 +323,19 @@
               <lay-select-option :value="4" label="报废"></lay-select-option>
             </lay-select>
           </template>
+          <template #is_back_to_factory="{ data }">
+            <lay-select
+                style="width: 100px"
+                v-model="data.is_back_to_factory"
+                :disabled="data.status !== 0"
+            >
+              <lay-select-option :value="0" label="否"></lay-select-option>
+              <lay-select-option :value="1" label="是"></lay-select-option>
+            </lay-select>
+          </template>
+          <template #remark="{ data }">
+            <lay-input v-model="data.remark"></lay-input>
+          </template>
           <template #warehouse_name="{ data }">
             <lay-select
                 style="width: 100px"
@@ -892,6 +905,8 @@ const backProductConfirm = async (row_list: any, status: number) => {
       status: status,
       quality_type: row.quality_type,
       warehouse_name: row.warehouse_name,
+      remark: row.remark,
+      is_back_to_factory: row.is_back_to_factory,
     })
   }
   await apiSwitchBackProductStatus(data).then(res => {
@@ -1040,7 +1055,9 @@ const columns3 = ref([
   {title: '数量', width: '80px', key: 'count', sort: 'desc', align: 'center'},
   {title: '品质类型', width: '120px', key: 'quality_type', sort: 'desc', customSlot: 'quality_type'},
   {title: '转入仓库', width: '120px', key: 'warehouse_name', sort: 'desc', customSlot: 'warehouse_name'},
+  {title: '是否返厂', width: '120px', key: 'is_back_to_factory', sort: 'desc', customSlot: 'is_back_to_factory'},
   {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
+  {title: '次品备注', width: '200px', key: 'remark', sort: 'desc',customSlot:'remark'},
   {
     title: '操作',
     width: '160px',

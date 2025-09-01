@@ -25,6 +25,8 @@ export interface switchAddBackProductStatusBody {
     status: number;
     quality_type: number;
     warehouse_name: number;
+    remark: string;
+    is_back_to_factory: number;
 }
 
 export interface setBackProductWarehouseNoBody {
