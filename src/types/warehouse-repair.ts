@@ -6,4 +6,11 @@ export interface setProductPartUseCountBody {
 export interface setProductRepairTypeBody {
     id_list: Array<number>;
     repair_type: number;
+    repair_put_in_warehouse_name: number;
+}
+
+
+export interface setBackProductRepairWarehouseNoBody {
+    id_list: Array<number>;
+    repair_put_in_warehouse_no: string;
 }

@@ -16,6 +16,10 @@ export const apiAddBackRecord = (data: addBackRecordBody) => {
     return Http.post('/add_back', data)
 }
 
+export const apiQueryShopDispute = (data: {logistics_no: string}) => {
+    return Http.post('/query_shop_dispute', data)
+}
+
 export const apiEditBackRecord = (data: editBackRecordBody) => {
     return Http.post('/edit_back', data)
 }
@@ -24,8 +28,12 @@ export const apiDelBackRecord = (data: Array<number>) => {
     return Http.post('/del_back', data)
 }
 
-export const apiSwitchBackRecordStatusBody = (data: switchBackRecordStatusBody) => {
+export const apiSwitchBackRecordStatusBody = (data: any) => {
     return Http.post('/switch_back_status', data)
+}
+
+export const apiSwitchBackRecordRefundStatusBody = (data: { br_id: any; refund_status: any }) => {
+    return Http.post('/switch_back_refund_status', data)
 }
 
 export const apiShopList = () => {

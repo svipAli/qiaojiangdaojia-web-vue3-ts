@@ -90,6 +90,7 @@
           <lay-col :md="6">
             <lay-form-item label="确认时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.confirm_time"
                   :range="true"
@@ -98,36 +99,63 @@
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
+            <lay-form-item label="检测时间" label-width="80">
+              <lay-date-picker
+                  type="datetime"
+                  :simple="true"
+                  v-model="query.check_time"
+                  :range="true"
+                  :allow-clear="true"
+                  style="width: 370px"
+              ></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="8">
+            <lay-form-item label="维修时间" label-width="80">
+              <lay-date-picker
+                  type="datetime"
+                  :simple="true"
+                  v-model="query.complete_time"
+                  :range="true"
+                  :allow-clear="true"
+                  style="width: 370px"
+              ></lay-date-picker>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="8">
             <lay-form-item label="入库时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.put_in_warehouse_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="创建时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.create_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="更新时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.update_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
@@ -176,6 +204,26 @@
               </lay-select>
             </lay-form-item>
           </lay-col>
+          <lay-col :md="6">
+            <lay-form-item label="维修转正仓库" label-width="80">
+              <lay-select v-model="query.repair_put_in_warehouse_name">
+                <lay-select-option :value="-1" label="全部"></lay-select-option>
+                <lay-select-option :value="4" label="次转正仓"></lay-select-option>
+                <lay-select-option :value="1" label="正品仓"></lay-select-option>
+                <lay-select-option :value="2" label="次品2仓(次品仓)"></lay-select-option>
+                <lay-select-option :value="5" label="次品1仓(二手销售/返厂)"></lay-select-option>
+                <lay-select-option :value="3" label="报废仓"></lay-select-option>
+              </lay-select>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="6">
+            <lay-form-item label="维修转入单号" label-width="80">
+              <lay-input
+                  v-model="query.repair_put_in_warehouse_no"
+                  :allow-clear="true"
+              ></lay-input>
+            </lay-form-item>
+          </lay-col>
           <lay-col :md="4">
             <lay-form-item label="是否返厂" label-width="80">
               <lay-select v-model="query.is_back_to_factory" style="width: 100px">
@@ -211,6 +259,12 @@
           v-model:selectedKeys="selectedKeys"
           @change="queryDataSource"
       >
+        <template v-slot:toolbar>
+          <lay-button size="sm" type="primary" @click="searchRepairPutInWarehouseNoWindow">
+            <lay-icon class="layui-icon-template-one"></lay-icon>
+            设置维修转入单号
+          </lay-button>
+        </template>
         <template v-slot:operator="{ row }">
           <lay-button
               size="xs"
@@ -247,11 +301,17 @@
         <template #confirm_time="{ data }">
           {{ convertTime(data.confirm_time) }}
         </template>
+        <template #check_time="{ data }">
+          {{ convertTime(data.check_time) }}
+        </template>
         <template #put_in_warehouse_time="{ data }">
           {{ convertTime(data.put_in_warehouse_time) }}
         </template>
         <template #is_back_to_factory="{ data }">
           {{ data.is_back_to_factory === 1 ? '是' : '否' }}
+        </template>
+        <template #repair_put_in_warehouse_name="{ data }">
+          {{ getRepairWarehouseName(data.repair_put_in_warehouse_name) }}
         </template>
       </lay-table>
     </lay-card>
@@ -286,13 +346,33 @@
           {{ convertTime(data.use_time) }}
         </template>
       </lay-table>
-      <lay-button type="primary" style="margin: 10px 10px" @click="setProductRepairType([currentRow.id],1)">
-        换包装完成
-      </lay-button>
-      <lay-button type="primary" style="margin: 10px 10px" @click="setProductRepairType([currentRow.id],2)">
-        拆修完成
-      </lay-button>
-      <lay-button style="margin: 10px 10px" @click="setProductRepairType([currentRow.id],0)">恢复待修</lay-button>
+      <lay-row>
+        <lay-col :md="2">
+          <lay-button type="primary" style="margin: 10px 10px" @click="setProductRepairType([currentRow.id],1)">
+            换包装完成
+          </lay-button>
+        </lay-col>
+        <lay-col :md="2">
+          <lay-button type="primary" style="margin: 10px 10px" @click="setProductRepairType([currentRow.id],2)">
+            拆修完成
+          </lay-button>
+        </lay-col>
+        <lay-col :md="3">
+          <lay-button style="margin: 10px 10px" @click="setProductRepairType([currentRow.id],0)">恢复待修</lay-button>
+        </lay-col>
+        <lay-col :md="6">
+          <lay-form-item label="转入仓库" label-width="80" style="margin-top: 10px;">
+            <lay-select v-model="repair_put_in_warehouse_name">
+              <lay-select-option :value="4" label="次转正仓"></lay-select-option>
+              <lay-select-option :value="1" label="正品仓"></lay-select-option>
+              <lay-select-option :value="2" label="次品2仓(次品仓)"></lay-select-option>
+              <lay-select-option :value="5" label="专送仓"></lay-select-option>
+              <lay-select-option :value="6" label="次品1仓(二手销售/返厂)"></lay-select-option>
+              <lay-select-option :value="3" label="报废仓"></lay-select-option>
+            </lay-select>
+          </lay-form-item>
+        </lay-col>
+      </lay-row>
     </lay-card>
   </lay-layer>
 </template>
@@ -305,7 +385,7 @@ import {
   convertTime,
   getProductPartStatus,
   getQualityType,
-  getRepairStatus, getRepairType,
+  getRepairStatus, getRepairType, getRepairWarehouseName,
   getStatus,
   getWarehouseName
 } from "@/utils/globalFunctions";
@@ -317,38 +397,65 @@ import {
   apiQueryBack,
 } from "@/api/module/warehouse-return";
 import {apiGetAllClasses} from "@/api/module/product";
-import {apiSetProductPartUseCount, apiSetProductRepairType} from "@/api/module/warehouse-repair";
-import {setProductPartUseCountBody, setProductRepairTypeBody} from "@/types/warehouse-repair";
+import {
+  apiSetProductPartUseCount,
+  apiSetProductRepairType,
+  apiSetRepairPutInWarehouseNo
+} from "@/api/module/warehouse-repair";
+import {
+  setBackProductRepairWarehouseNoBody,
+  setProductPartUseCountBody,
+  setProductRepairTypeBody
+} from "@/types/warehouse-repair";
+import {setBackProductWarehouseNoBody} from "@/types/warehouse-back";
+import {apiSetBackProductWarehouseNo} from "@/api/module/warehouse-back";
 
 
 defineOptions({
   name: 'WarehouseRepair'
 })
-
+const repair_put_in_warehouse_name = ref(4)
 
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
-  {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left'},
+  {title: '序号', width: '60px', type: 'number', fixed: 'left'},
+  {title: 'ID', width: '100px', key: 'id', sort: 'desc', fixed: 'left', hide: true},
   {title: '维修状态', width: '100px', key: 'repair_status', sort: 'desc', customSlot: 'repair_status'},
   {title: '维修方式', width: '100px', key: 'repair_type', sort: 'desc', customSlot: 'repair_type'},
+  {
+    title: '维修转入仓库',
+    width: '150px',
+    key: 'repair_put_in_warehouse_name',
+    sort: 'desc',
+    customSlot: 'repair_put_in_warehouse_name'
+  },
+  {title: '维修转入单号', width: '150px', key: 'repair_put_in_warehouse_no', sort: 'desc'},
   {title: '退货状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status'},
   {title: '托盘编号', width: '120px', key: 'tray_no', sort: 'desc'},
-  {title: '订单编号', width: '200px', key: 'order_no', sort: 'desc'},
+  {title: '订单编号', width: '200px', key: 'order_no', sort: 'desc', hide: true},
   {title: '溯源码', width: '160px', key: 'product_code', sort: 'desc'},
   {title: '产品型号', width: '150px', key: 'product_model', sort: 'desc'},
   {title: '产品数量', width: '150px', key: 'count', sort: 'desc', hide: true},
   {title: '产品名称', width: '150px', key: 'product_name', sort: 'desc'},
   {title: '次品备注', width: '250px', key: 'remark', sort: 'desc', resize: true},
-  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc'},
-  {title: '物流单号', width: '200px', key: 'logistics_no', sort: 'desc'},
-  {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
-  {title: '店铺名称', width: '250px', key: 'shop', sort: 'desc'},
+  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc', hide: true},
+  {title: '物流单号', width: '200px', key: 'logistics_no', sort: 'desc', hide: true},
+  {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc', hide: true},
+  {title: '店铺名称', width: '250px', key: 'shop', sort: 'desc', hide: true},
   {title: '品质类型', width: '160px', key: 'quality_type', sort: 'desc', customSlot: 'quality_type'},
   {title: '仓库名称', width: '160px', key: 'warehouse_name', sort: 'desc', customSlot: 'warehouse_name'},
   {title: '确认时间', width: '160px', key: 'confirm_time', sort: 'desc', customSlot: 'confirm_time'},
   {title: '入库时间', width: '160px', key: 'put_in_warehouse_time', sort: 'desc', customSlot: 'put_in_warehouse_time'},
+  {title: '检测时间', width: '160px', key: 'check_time', sort: 'desc', customSlot: 'check_time'},
   {title: '维修完成时间', width: '160px', key: 'complete_time', sort: 'desc', customSlot: 'complete_time'},
-  {title: '是否返厂', width: '120px', key: 'is_back_to_factory', sort: 'desc', customSlot: 'is_back_to_factory', resize: true},
+  {
+    title: '是否返厂',
+    width: '120px',
+    key: 'is_back_to_factory',
+    sort: 'desc',
+    customSlot: 'is_back_to_factory',
+    resize: true
+  },
   {title: '更新时间', width: '160px', key: 'update_time', sort: 'desc', customSlot: 'update_time'},
   {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc'},
   {title: '创建时间', width: '160px', key: 'create_time', sort: 'desc', customSlot: 'create_time'},
@@ -402,8 +509,10 @@ const query = ref({
   shop_id: [-1],
   class_id: [-1],
   confirm_time: [],
+  check_time: [],
   put_in_warehouse_time: [],
   create_time: [],
+  complete_time: [],
   update_time: [],
   repair_status: -1,
   repair_type: -1,
@@ -411,6 +520,9 @@ const query = ref({
   status: -1,
   warehouse_name: -1,
   is_back_to_factory: -1,
+  confirm_user_id: -1,
+  repair_put_in_warehouse_name: -1,
+  repair_put_in_warehouse_no: ''
 })
 
 const changeProductPartUserCount = async (row: any) => {
@@ -447,7 +559,8 @@ const loadDataSource2 = async () => {
 const setProductRepairType = async (id_list: Array<number>, repair_status: number) => {
   let data: setProductRepairTypeBody = {
     id_list: id_list,
-    repair_type: repair_status
+    repair_type: repair_status,
+    repair_put_in_warehouse_name: repair_put_in_warehouse_name.value
   }
   await apiSetProductRepairType(data).then((res: Result) => {
     let {code, message} = res
@@ -512,6 +625,8 @@ const toReset = () => {
     shop_id: [-1],
     class_id: [-1],
     confirm_time: [],
+    complete_time: [],
+    check_time: [],
     put_in_warehouse_time: [],
     create_time: [],
     update_time: [],
@@ -520,7 +635,10 @@ const toReset = () => {
     quality_type: -1,
     status: -1,
     warehouse_name: -1,
-    is_back_to_factory: -1
+    is_back_to_factory: -1,
+    confirm_user_id: -1,
+    repair_put_in_warehouse_name: -1,
+    repair_put_in_warehouse_no: ''
   }
 }
 
@@ -537,9 +655,11 @@ const queryDataSource = async () => {
     shop_id: query.value.shop_id,
     class_id: query.value.class_id,
     confirm_time: query.value.confirm_time,
+    complete_time: query.value.complete_time,
     put_in_warehouse_time: query.value.put_in_warehouse_time,
     create_time: query.value.create_time,
     update_time: query.value.update_time,
+    check_time: query.value.check_time,
     repair_status: query.value.repair_status,
     repair_type: query.value.repair_type,
     quality_type: query.value.quality_type,
@@ -547,6 +667,9 @@ const queryDataSource = async () => {
     warehouse_name: query.value.warehouse_name,
     logistics_no: query.value.logistics_no,
     is_back_to_factory: query.value.is_back_to_factory,
+    confirm_user_id: query.value.confirm_user_id,
+    repair_put_in_warehouse_name: query.value.repair_put_in_warehouse_name,
+    repair_put_in_warehouse_no: query.value.repair_put_in_warehouse_no,
     page: page.current,
     limit: page.limit,
   }
@@ -562,7 +685,75 @@ const queryDataSource = async () => {
   })
   loading.value = false
 }
+const getCurrentRow = (row_id: number) => {
+  for (let item of dataSource.value) {
+    if (item.id === row_id) {
+      return item
+    }
+  }
+  return null
+}
 
+const getCurrentRowIndex = (row_id: number) => {
+  for (let i = 0; i < dataSource.value.length; i++) {
+    if (dataSource.value[i].id === row_id) {
+      return i
+    }
+  }
+  return -1
+}
+
+const setRowRepairWarehouseNo = (id_list: Array<number>, repair_put_in_warehouse_no: string) => {
+  for (let i = 0; i < id_list.length; i++) {
+    let index = getCurrentRowIndex(id_list[i])
+    if (index === -1) {
+      continue
+    }
+    dataSource.value[index].repair_put_in_warehouse_no = repair_put_in_warehouse_no
+  }
+}
+
+const searchRepairPutInWarehouseNo = (id_list: Array<number>, repair_put_in_warehouse_no: string, index: string) => {
+  let data: setBackProductRepairWarehouseNoBody = {
+    id_list: id_list,
+    repair_put_in_warehouse_no: repair_put_in_warehouse_no
+  }
+  apiSetRepairPutInWarehouseNo(data).then(res => {
+    let {code, message} = res
+    if (code === 0) {
+      layer.msg('操作成功')
+      setRowRepairWarehouseNo(id_list, repair_put_in_warehouse_no)
+      selectedKeys.value = []
+      layer.close(index)
+    } else {
+      layer.msg(message)
+    }
+  })
+}
+
+const searchRepairPutInWarehouseNoWindow = () => {
+  if (selectedKeys.value.length === 0) {
+    layer.msg('请选择维修订单', {icon: 2, time: 2000})
+    return
+  }
+  for (let row_id of selectedKeys.value) {
+    let item = getCurrentRow(row_id)
+    if (item === null) {
+      layer.msg('数据异常，数据不存在！')
+      return
+    }
+  }
+
+  layer.prompt({
+    formType: 0,
+    title: '填写维修转入单号',
+    placeholder: '',
+    area: ['300px', '200px'],
+    yes: (index: string, value: string) => {
+      searchRepairPutInWarehouseNo(selectedKeys.value, value, index)
+    }
+  })
+}
 onMounted(() => {
   getAllProductClass()
   loadShopList()

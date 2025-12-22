@@ -5,6 +5,7 @@ export interface getBackQueryBody {
     order_no: string;
     shop_id: number;
     status: number;
+    refund_status: number;
     logistics_no: string;
     create_time: Array<string>;
     update_time: Array<string>;

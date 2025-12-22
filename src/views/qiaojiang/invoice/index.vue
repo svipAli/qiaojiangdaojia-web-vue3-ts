@@ -79,11 +79,14 @@
     <lay-card>
       <lay-table
           height="650px"
+          :page="page"
           :columns="columns"
           :loading="loading"
           :data-source="dataSource"
           :default-toolbar="true"
-          v-model:selectedKeys="selectedKeys">
+          v-model:selectedKeys="selectedKeys"
+          @change="queryDataSource"
+      >
         <template #toolbar>
           <lay-button type="primary" size="sm" @click="changeVisible('新增',null)">
             <lay-icon class="layui-icon-addition"></lay-icon>
@@ -138,6 +141,9 @@
         </template>
         <template #create_time="{ data }">
           {{ convertTime(data.create_time) }}
+        </template>
+        <template #invoice_date="{ data }">
+          {{ convertTime(data.invoice_date) }}
         </template>
         <template #update_time="{ data }">
           {{ convertTime(data.update_time) }}
@@ -399,10 +405,10 @@ const redInvoiceConfirm = (row: any) => {
 
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
-  {title: 'ID', width: '80px', key: 'id', sort: 'desc', fixed: 'left'},
-  {title: '开具状态', width: '120px', key: 'status', sort: 'desc', customSlot: 'status'},
-  {title: '推送状态', width: '120px', key: 'push_status', sort: 'desc', customSlot: 'push_status'},
-  {title: '开具日期', width: '180px', key: 'invoice_date', sort: 'desc'},
+  {title: 'ID', width: '70px', key: 'id', sort: 'desc', fixed: 'left'},
+  {title: '开具状态', width: '100px', key: 'status', sort: 'desc', customSlot: 'status'},
+  {title: '推送状态', width: '100px', key: 'push_status', sort: 'desc', customSlot: 'push_status'},
+  {title: '开具日期', width: '160px', key: 'invoice_date', sort: 'desc', customSlot: 'invoice_date'},
   {title: '发票类型', width: '150px', key: 'invoice_type', sort: 'desc', customSlot: 'invoice_type'},
   {title: '发票抬头', width: '200px', key: 'invoice_title', sort: 'desc'},
   {title: '发票税号', width: '220px', key: 'tax_no', sort: 'desc'},
@@ -431,7 +437,7 @@ const columns = ref([
 const loading = ref(false)
 const dataSource = ref()
 const selectedKeys = ref<number[]>([])
-const page = reactive({current: 1, limit: 10, total: 0})
+const page = reactive({current: 1, limit: 20, total: 0, limits: [20, 50, 100, 200, 500]})
 
 const query = ref({
   invoice_title: '',
@@ -543,10 +549,12 @@ const queryDataSource = async () => {
     page: page.current,
     limit: page.limit,
   }
-  await apiQueryQJInvoice(data).then((res: Result) => {
-    let {code, data, message} = res
+  await apiQueryQJInvoice(data).then((res: DataResult) => {
+    let {code, data, message, total} = res
     if (code === 0) {
       dataSource.value = data
+      page.total = total
+      selectedKeys.value = []
     } else {
       layer.msg(message, {icon: 3, time: 2000})
     }

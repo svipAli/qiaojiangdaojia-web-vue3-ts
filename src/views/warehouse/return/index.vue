@@ -94,47 +94,51 @@
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="确认时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.confirm_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="入库时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.put_in_warehouse_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="创建时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.create_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="更新时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="query.update_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
@@ -189,6 +193,16 @@
                 <lay-select-option :value="-1" label="全部"></lay-select-option>
                 <lay-select-option :value="1" label="是"></lay-select-option>
                 <lay-select-option :value="0" label="否"></lay-select-option>
+              </lay-select>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="4">
+            <lay-form-item label="拆包人" label-width="80">
+              <lay-select v-model="query.confirm_user_id" style="width: 150px">
+                <lay-select-option :value="-1" label="全部"></lay-select-option>
+                <template v-for="item in confirmUserList">
+                  <lay-select-option :value="item.id" :label="item.nick_name"></lay-select-option>
+                </template>
               </lay-select>
             </lay-form-item>
           </lay-col>
@@ -324,11 +338,20 @@
         <template #use_time="{ data }">
           {{ convertTime(data.use_time) }}
         </template>
+        <template #purchase_price="{ data }">
+          {{ purchase_price_(data.purchase_price) }}
+        </template>
+        <template #purchase_price_total="{ data }">
+          {{ purchase_price_total_(data.purchase_price, data.count) }}
+        </template>
       </lay-table>
-      <lay-button type="primary" style="margin: 10px 10px" @click="setProductPartStatus([currentRow.id],1)">
-        检测完成
+      <lay-button type="primary" style="margin: 10px 10px" @click="setProductPartStatus([currentRow.id],1,1)">
+        换包装检测完成
       </lay-button>
-      <lay-button style="margin: 10px 10px" @click="setProductPartStatus([currentRow.id],0)">恢复待检</lay-button>
+      <lay-button type="primary" style="margin: 10px 10px" @click="setProductPartStatus([currentRow.id],1,2)">
+        拆修检测完成
+      </lay-button>
+      <lay-button style="margin: 10px 10px" @click="setProductPartStatus([currentRow.id],0,0)">恢复待检</lay-button>
     </lay-card>
   </lay-layer>
   <lay-layer v-model="addPartVisible" :title="partVisibleTitle" :area="['1000px', '750px']">
@@ -392,7 +415,7 @@ import {
   apiBackProductPutInWarehouseNoConfirm,
   apiDelProductPart, apiExportProductPart,
   apiGetProductPart,
-  apiQueryBack,
+  apiQueryBack, apiQueryConfirmUser,
   apiQueryProductPart,
   apiSaveProductPart, apiSetProductPartCount, apiSetProductPartStatus, apiSetProductTray
 } from "@/api/module/warehouse-return";
@@ -416,6 +439,14 @@ const searchPartForm = ref({
   product_model: ''
 })
 
+const purchase_price_ = (purchase_price: any) => {
+  return Number(purchase_price).toFixed(2)
+}
+
+const purchase_price_total_ = (purchase_price: any, count: any) => {
+  return (Number(purchase_price) * Number(count)).toFixed(2)
+}
+
 const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '60px', type: 'number', fixed: 'left'},
@@ -436,8 +467,16 @@ const columns = ref([
   {title: '维修状态', width: '100px', key: 'repair_status', sort: 'desc', customSlot: 'repair_status', resize: true},
   {title: '溯源码', width: '160px', key: 'product_code', sort: 'desc', resize: true},
   {title: '托盘编号', width: '120px', key: 'tray_no', sort: 'desc', resize: true},
-  {title: '是否返厂', width: '120px', key: 'is_back_to_factory', sort: 'desc', customSlot: 'is_back_to_factory', resize: true},
+  {
+    title: '是否返厂',
+    width: '120px',
+    key: 'is_back_to_factory',
+    sort: 'desc',
+    customSlot: 'is_back_to_factory',
+    resize: true
+  },
   {title: '确认时间', width: '160px', key: 'confirm_time', sort: 'desc', customSlot: 'confirm_time', resize: true},
+  {title: '确认人', width: '120px', key: 'confirm_user_name', sort: 'desc', resize: true},
   {
     title: '入库时间',
     width: '160px',
@@ -469,10 +508,13 @@ const columns = ref([
 const columns2 = ref([
   {title: '选项', width: '60px', type: 'checkbox'},
   {title: 'ID', width: '100px', key: 'id', hide: true},
+  {title: '序号', width: '60px', type: 'number', fixed: 'left'},
   {title: '配件状态', width: '80px', key: 'status', customSlot: 'get_product_part_status'},
-  {title: '配件名称', width: '150px', key: 'part_name'},
-  {title: '配件型号', width: '150px', key: 'part_model'},
-  {title: '配件数量', width: '100px', key: 'count', customSlot: 'count'},
+  {title: '配件名称', width: '180px', key: 'part_name'},
+  {title: '配件型号', width: '180px', key: 'part_model'},
+  {title: '配件数量', width: '150px', key: 'count', customSlot: 'count'},
+  {title: '成本单价', width: '100px', key: 'purchase_price', customSlot: 'purchase_price'},
+  {title: '成本金额', width: '100px', key: 'purchase_price_total', totalRow: true},
   {title: '使用时间', width: '160px', key: 'use_time', customSlot: 'use_time'},
   {title: '备注', width: '160px', key: 'remark'},
   {
@@ -517,6 +559,7 @@ const query = ref({
   shop_id: [-1],
   class_id: [-1],
   confirm_time: [],
+  complete_time: [],
   put_in_warehouse_time: [],
   create_time: [],
   update_time: [],
@@ -525,7 +568,8 @@ const query = ref({
   quality_type: -1,
   status: -1,
   warehouse_name: -1,
-  is_back_to_factory: -1
+  is_back_to_factory: -1,
+  confirm_user_id: -1,
 })
 
 
@@ -800,10 +844,11 @@ const loadDataSource2 = async () => {
   loading2.value = false
 }
 
-const setProductPartStatus = async (id_list: Array<number>, repair_status: number) => {
+const setProductPartStatus = async (id_list: Array<number>, repair_status: number, repair_type: number) => {
   let data: setProductPartStatusBody = {
     id_list: id_list,
-    repair_status: repair_status
+    repair_status: repair_status,
+    repair_type: repair_type,
   }
   await apiSetProductPartStatus(data).then((res: Result) => {
     let {code, message} = res
@@ -869,6 +914,7 @@ const toReset = () => {
     shop_id: [-1],
     class_id: [-1],
     confirm_time: [],
+    complete_time: [],
     put_in_warehouse_time: [],
     create_time: [],
     update_time: [],
@@ -877,7 +923,8 @@ const toReset = () => {
     quality_type: -1,
     status: -1,
     warehouse_name: -1,
-    is_back_to_factory: -1
+    is_back_to_factory: -1,
+    confirm_user_id: -1,
   }
 }
 
@@ -894,6 +941,7 @@ const queryDataSource = async () => {
     shop_id: query.value.shop_id,
     class_id: query.value.class_id,
     confirm_time: query.value.confirm_time,
+    complete_time: query.value.complete_time,
     put_in_warehouse_time: query.value.put_in_warehouse_time,
     create_time: query.value.create_time,
     update_time: query.value.update_time,
@@ -904,6 +952,7 @@ const queryDataSource = async () => {
     warehouse_name: query.value.warehouse_name,
     logistics_no: query.value.logistics_no,
     is_back_to_factory: query.value.is_back_to_factory,
+    confirm_user_id: query.value.confirm_user_id,
     page: page.current,
     limit: page.limit,
   }
@@ -918,6 +967,19 @@ const queryDataSource = async () => {
     }
   })
   loading.value = false
+}
+
+const confirmUserList = ref()
+
+const loadConfirmUserList = async () => {
+  await apiQueryConfirmUser().then((res: Result) => {
+    let {code, data, message} = res
+    if (code === 0) {
+      confirmUserList.value = data
+    } else {
+      layer.msg(message, {icon: 2, time: 2000})
+    }
+  })
 }
 
 const productPartRemove = (id_list: Array<number>) => {
@@ -949,6 +1011,7 @@ const backPartRemove = async (id_list: Array<number>) => {
 onMounted(() => {
   getAllProductClass()
   loadShopList()
+  loadConfirmUserList()
   queryDataSource()
 })
 </script>

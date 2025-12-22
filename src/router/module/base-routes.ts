@@ -98,9 +98,27 @@ export default [
             {
                 path: '/qiaojiang/invoice',
                 name: 'QiaojiangInvoice',
-                component: () => import('../../views/qiaojiang/invoice/index.vue'),
+                component: () => import('@/views/qiaojiang/invoice/index.vue'),
                 meta: {title: '发票管理', requireAuth: true},
             },
+            // {
+            //     path: '/qiaojiang/qj_inventory',
+            //     name: 'QiaojiangInventory',
+            //     component: () => import('@/views/qiaojiang/qj_inventory/index.vue'),
+            //     meta: {title: '巧匠配件库存', requireAuth: true},
+            // },
+            // {
+            //     path: '/qiaojiang/qj_inventory_record',
+            //     name: 'QiaojiangInventoryRecord',
+            //     component: () => import('@/views/qiaojiang/qj_inventoryRecord/index.vue'),
+            //     meta: {title: '巧匠库存单据', requireAuth: true},
+            // },
+            // {
+            //     path: '/qiaojiang/qj_warehouse',
+            //     name: 'QiaojiangWarehouse',
+            //     component: () => import('@/views/qiaojiang/qj_warehouse/index.vue'),
+            //     meta: {title: '巧匠仓库管理', requireAuth: true},
+            // },
         ]
     },
     {

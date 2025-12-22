@@ -10,9 +10,8 @@ type TAxiosOption = {
 
 export const config: TAxiosOption = {
     timeout: 30000,
-    // baseURL: "https://api.qj.xienkeji.com",
-    baseURL: "https://api.qiaojiangdaojia.top",
-    // baseURL: "http://127.0.0.1:8000",
+    // baseURL: "https://api.qiaojiangdaojia.top",
+    baseURL: "http://127.0.0.1:8000",
 }
 
 class Http {

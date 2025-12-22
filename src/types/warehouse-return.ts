@@ -9,6 +9,8 @@ export interface getBackQueryBody {
     shop_id: Array<number>;
     class_id: Array<number>;
     confirm_time: Array<string>;
+    check_time?: Array<string>;
+    complete_time: Array<string>;
     put_in_warehouse_time: Array<string>;
     create_time: Array<string>;
     update_time: Array<string>;
@@ -18,6 +20,9 @@ export interface getBackQueryBody {
     status: number;
     warehouse_name: number;
     is_back_to_factory: number;
+    confirm_user_id?: number;
+    repair_put_in_warehouse_name?: number;
+    repair_put_in_warehouse_no?: string;
     page: number;
     limit: number;
 }
@@ -38,6 +43,7 @@ export interface saveProductPartBody {
 export interface setProductPartStatusBody {
     id_list: Array<number>;
     repair_status: number;
+    repair_type: number;
 }
 
 export interface setProductTrayBody {

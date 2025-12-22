@@ -43,6 +43,26 @@ export const getWarehouseName = (warehouse_name: number) => {
     }
 }
 
+export const getRepairWarehouseName = (warehouse_name: number) => {
+    switch (warehouse_name) {
+        case 0:
+            return "待定";
+        case 1:
+            return "正品仓";
+        case 2:
+            return "次品2仓(次品仓)";
+        case 3:
+            return "报废仓";
+        case 4:
+            return "次转正仓";
+        case 5:
+            return "专送仓";
+        case 6:
+            return "次品1仓(二手销售/返厂)";
+        default:
+            return "未知";
+    }
+}
 
 export const getQualityType = (quality_type: number) => {
     switch (quality_type) {

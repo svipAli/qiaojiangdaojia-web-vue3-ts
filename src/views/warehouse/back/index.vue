@@ -1,7 +1,7 @@
 <template>
   <lay-container fluid="true" class="user-box">
     <lay-card>
-      <lay-form style="margin-top: 10px" @keyup.enter="toSearch">
+      <lay-form style="margin-top: 10px">
         <lay-row :space="30">
           <lay-col :md="5">
             <lay-form-item label="单据号" label-width="80">
@@ -9,6 +9,7 @@
                   v-model="searchQuery.br_id"
                   :allow-clear="true"
                   style="width: 98%"
+                  @keyup.enter="toSearch"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -28,6 +29,7 @@
                   v-model="searchQuery.order_no"
                   :allow-clear="true"
                   style="width: 98%"
+                  @keyup.enter="toSearch"
               ></lay-input>
             </lay-form-item>
           </lay-col>
@@ -37,41 +39,56 @@
                   v-model="searchQuery.logistics_no"
                   :allow-clear="true"
                   style="width: 98%"
+                  @keyup.enter="toSearchShopBack"
               ></lay-input>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="5">
             <lay-form-item label="单据状态" label-width="80">
-              <lay-select v-model="searchQuery.status">
+              <lay-select v-model="searchQuery.status" style="width: 150px">
                 <lay-select-option :value="-1" label="全部"></lay-select-option>
-                <lay-select-option :value="0" label="待处理"></lay-select-option>
-                <lay-select-option :value="1" label="处理完成"></lay-select-option>
+                <lay-select-option :value="0" label="待拆包"></lay-select-option>
+                <lay-select-option :value="1" label="拆包完成"></lay-select-option>
+                <lay-select-option :value="2" label="已拒收"></lay-select-option>
               </lay-select>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="5">
+            <lay-form-item label="退款结果" label-width="80">
+              <lay-select v-model="searchQuery.refund_status" style="width: 150px">
+                <lay-select-option :value="-1" label="全部"></lay-select-option>
+                <lay-select-option :value="0" label="待退款"></lay-select-option>
+                <lay-select-option :value="1" label="已退款"></lay-select-option>
+                <lay-select-option :value="2" label="部分退款"></lay-select-option>
+                <lay-select-option :value="3" label="已拒绝退款"></lay-select-option>
+              </lay-select>
+            </lay-form-item>
+          </lay-col>
+          <lay-col :md="8">
             <lay-form-item label="创建时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="searchQuery.create_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="6">
+          <lay-col :md="8">
             <lay-form-item label="更新时间" label-width="80">
               <lay-date-picker
+                  type="datetime"
                   :simple="true"
                   v-model="searchQuery.update_time"
                   :range="true"
                   :allow-clear="true"
-                  style="width: 250px"
+                  style="width: 370px"
               ></lay-date-picker>
             </lay-form-item>
           </lay-col>
-          <lay-col :md="4">
+          <lay-col :md="5">
             <lay-form-item label-width="20">
               <lay-button
                   style="margin-left: 20px"
@@ -79,6 +96,13 @@
                   @click="toSearch"
               >
                 查询
+              </lay-button>
+              <lay-button
+                  style="margin-left: 20px"
+                  type="normal"
+                  @click="toSearchShopBack"
+              >
+                查退款
               </lay-button>
               <lay-button @click="toReset"> 重置</lay-button>
             </lay-form-item>
@@ -129,11 +153,18 @@
           >商品
           </lay-button
           >
+          <!--          <lay-button-->
+          <!--              size="xs"-->
+          <!--              type="normal"-->
+          <!--              @click="changeSrcVisible(row.br_id)"-->
+          <!--          >资源-->
+          <!--          </lay-button-->
+          <!--          >-->
           <lay-button
               size="xs"
-              type="normal"
-              @click="changeSrcVisible(row.br_id)"
-          >资源
+              type="danger"
+              @click="switchBackRecordStatusRefuse(row)"
+          >拒收
           </lay-button
           >
           <lay-popconfirm
@@ -150,7 +181,12 @@
           {{ getShopName(data.shop_id) }}
         </template>
         <template #status="{ data }">
-          {{ getBackRecordStatus(data.status) }}
+          <lay-tag :type="getBackRecordStatusColor(data.status)">{{ getBackRecordStatus(data.status) }}</lay-tag>
+        </template>
+        <template #refund_status="{ data }">
+          <lay-button size="xs" :type="getBackRecordRefundStatusColor(data.refund_status)" @click="visitDetail(data)">
+            {{ getBackRecordRefundStatus(data.refund_status) }}
+          </lay-button>
         </template>
         <template #create_time="{ data }">
           {{ convertTime(data.create_time) }}
@@ -400,6 +436,43 @@
         </lay-card>
       </div>
     </lay-layer>
+    <lay-layer v-model="shopDisputeVisible" title="店铺退款订单" :area="['1400px', '750px']">
+      <div style="padding: 20px">
+        <lay-card>
+          <lay-table
+              :height="'100%'"
+              :columns="columnsShopDispute"
+              :data-source="dataSourceShopDispute"
+              v-model:selected-keys="selectedKeysShopDispute"
+          >
+            <template #img="{ data }">
+              <img :src="data.img" alt="商品图片" style="width: 100px">
+            </template>
+            <template v-slot:toolbar>
+              <lay-button size="sm" type="primary" @click="createBackRecord(selectedKeysShopDispute)">
+                <lay-icon class="layui-icon-ok"></lay-icon>
+                生成退货单
+              </lay-button>
+            </template>
+            <template v-slot:operator="{ row }">
+              <lay-button size="xs" type="primary" @click="createBackRecord([row.id])">
+                <lay-icon class="layui-icon-ok"></lay-icon>
+                生成退货单
+              </lay-button>
+            </template>
+          </lay-table>
+        </lay-card>
+      </div>
+    </lay-layer>
+    <lay-layer v-model="changeRefundStatusVisible" title="修改退款结果" :area="['500px', '130px']">
+      <div style="padding: 20px">
+        <lay-radio v-model="g_refund_status" name="action" :value="0" label="待退款"></lay-radio>
+        <lay-radio v-model="g_refund_status" name="action" :value="1" label="已退款"></lay-radio>
+        <lay-radio v-model="g_refund_status" name="action" :value="2" label="部分退款"></lay-radio>
+        <lay-radio v-model="g_refund_status" name="action" :value="3" label="拒绝退款"></lay-radio>
+        <lay-button style="margin-left: 20px" size="sm" type="primary" @click="changeRefundStatus">确定修改</lay-button>
+      </div>
+    </lay-layer>
     <lay-layer v-model="src_visible1" title="资源" :area="['1000px', '600px']">
       <lay-container fluid style="padding: 10px">
         <lay-form-item label="视频地址" label-width="80">
@@ -457,10 +530,10 @@ import {
   apiBackQuery, apiBatchOptionSet, apiCheckOrder,
   apiDelBackProduct, apiDelBackRecord, apiDelVideoUrl,
   apiEditBackRecord,
-  apiGetBackProduct, apiGetVideoUrl,
+  apiGetBackProduct, apiGetVideoUrl, apiQueryShopDispute,
   apiSaveAddBackProduct,
   apiSetBackProductWarehouseNo,
-  apiSwitchBackProductStatus,
+  apiSwitchBackProductStatus, apiSwitchBackRecordRefundStatusBody,
   apiSwitchBackRecordStatusBody, apiUpdateVideoUrl
 } from "@/api/module/warehouse-back";
 import {apiQueryProduct,} from "@/api/module/product";
@@ -472,6 +545,8 @@ import {apiQueryShop} from "@/api/module/shop";
 
 import COS from 'cos-js-sdk-v5';
 
+const shopDisputeVisible = ref(false);
+const changeRefundStatusVisible = ref(false);
 const backReasons = ref([
   {label: '不想要了', value: '不想要了'},
   {label: '尺寸不合适，无法安装', value: '尺寸不合适，无法安装'},
@@ -541,7 +616,38 @@ const update_video_url = async (file_url: string, br_id: string) => {
     }
   })
 }
+const g_refund_status = ref()
+const changeRefundStatus = async () => {
+  if (!currentRow.value.refund_no) {
+    layer.msg('请输入退款单号')
+    return
+  }
+  let data = {
+    br_id: currentRow.value.br_id,
+    refund_status: g_refund_status.value,
+  }
+  await apiSwitchBackRecordRefundStatusBody(data).then(res => {
+    let {code, message, data} = res
+    if (code === 0) {
+      changeRefundStatusVisible.value = false
+      layer.msg(message,{icon: 1, time: 2000})
+      updateDataSource(currentRow.value.id)
+    } else {
+      layer.msg(message, {icon: 3, time: 2000})
+    }
+  })
+}
 
+const visitDetail = (data: any) => {
+  if (data.refund_no.replace(/\s+/g, '').length > 8) {
+    window.open('https://myseller.taobao.com/home.htm/trade-platform/refund-list/detail?&disputeId=' + data.refund_no)
+  } else {
+    layer.msg('未登记平台退款单号,无法访问退款详情!')
+  }
+  currentRow.value = data
+  g_refund_status.value = data.refund_status
+  changeRefundStatusVisible.value = true
+}
 const checkOrder = async () => {
   if (!model11.value.order_no) {
     layer.msg('请输入订单号')
@@ -751,9 +857,47 @@ const backProductStatusBtn = (status: number) => {
 const getBackRecordStatus = (status: number) => {
   switch (status) {
     case 0:
-      return '待处理'
+      return '待拆包'
     case 1:
-      return '处理完成'
+      return '拆包完成'
+    case 2:
+      return '已拒收'
+  }
+}
+
+const getBackRecordStatusColor = (status: number) => {
+  switch (status) {
+    case 0:
+      return 'warm'
+    case 1:
+      return 'primary'
+    case 2:
+      return 'danger'
+  }
+}
+const getBackRecordRefundStatus = (refund_status: number) => {
+  switch (refund_status) {
+    case 0:
+      return '待退款'
+    case 1:
+      return '已退款'
+    case 2:
+      return '部分退款'
+    case 3:
+      return '拒绝退款'
+  }
+}
+
+const getBackRecordRefundStatusColor = (refund_status: number) => {
+  switch (refund_status) {
+    case 0:
+      return 'warm'
+    case 1:
+      return 'primary'
+    case 2:
+      return 'normal'
+    case 3:
+      return 'danger'
   }
 }
 
@@ -776,6 +920,7 @@ const searchAddProductModel = ref({
 const searchQuery = ref({
   shop_id: -1,
   status: -1,
+  refund_status: -1,
   br_id: '',
   order_no: '',
   logistics_no: '',
@@ -787,6 +932,7 @@ function toReset() {
   searchQuery.value = {
     shop_id: -1,
     status: -1,
+    refund_status: -1,
     br_id: '',
     order_no: '',
     logistics_no: '',
@@ -798,6 +944,76 @@ function toReset() {
 function toSearch() {
   page.current = 1
   queryDataSource()
+}
+
+const toSearchShopBack = async () => {
+  if (searchQuery.value.logistics_no.length === 0) {
+    layer.msg('请输入物流单号')
+    return
+  }
+  loading.value = true
+  const data: getBackQueryBody = {
+    page: 1,
+    limit: 40,
+    shop_id: searchQuery.value.shop_id,
+    status: searchQuery.value.status,
+    refund_status: searchQuery.value.refund_status,
+    br_id: searchQuery.value.br_id,
+    logistics_no: searchQuery.value.logistics_no,
+    create_time: searchQuery.value.create_time,
+    update_time: searchQuery.value.update_time,
+    order_no: searchQuery.value.order_no
+  }
+  await apiBackQuery(data).then((res: DataResult) => {
+    let {code, data, total, message} = res
+    if (code === 0) {
+      if (total > 0) {
+        page.current = 1
+        page.total = total
+        dataSource.value = data
+      } else {
+        toSearchShop(searchQuery.value.logistics_no)
+      }
+      selectedKeys.value = []
+    } else {
+      layer.msg(message, {icon: 3, time: 2000})
+    }
+  })
+  loading.value = false
+}
+
+const toSearchShop = async (logistics_no: string) => {
+  let data = {logistics_no: logistics_no}
+  await apiQueryShopDispute(data).then((res: Result) => {
+    let {data} = res
+    if (data !== null && data.length > 0) {
+      let index = 0
+      let data_init = []
+      for (let item of data) {
+        for (let data_ of item.data) {
+          index++
+          data_init.push({
+            id: index,
+            shop_id: item.shop_id,
+            shop_name: item.shop_name,
+            order_no: data_.flagRewardVO.bizOrderId,
+            refund_no: data_.flagRewardVO.bizId,
+            img: data_.disputeBodyVO.itemInfo.imgURI,
+            sku: data_.disputeBodyVO.itemInfo.sku,
+            product_title: data_.disputeBodyVO.itemInfo.title,
+            back_reason: data_.disputeBodyVO.options[3].title.name,
+            remark: data_.flagRewardVO.remark,
+            logistics_no: logistics_no
+          })
+        }
+      }
+      dataSourceShopDispute.value = data_init
+      shopDisputeVisible.value = !shopDisputeVisible.value
+      selectedKeysShopDispute.value = []
+    } else {
+      layer.msg("未查询到相关订单！", {icon: 7, time: 2000})
+    }
+  })
 }
 
 function toSearch2() {
@@ -979,6 +1195,7 @@ const loading = ref(false)
 const loading2 = ref(false)
 const loading3 = ref(false)
 const selectedKeys = ref<number[]>([])
+const selectedKeysShopDispute = ref<number[]>([])
 const selectedKeys2 = ref<number[]>([])
 const selectedKeys3 = ref<number[]>([])
 const page = reactive({current: 1, limit: 40, total: 0})
@@ -987,38 +1204,48 @@ const columns = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '60px', type: 'number', fixed: 'left'},
   {
-    title: '状态',
+    title: '单据状态',
     width: '100px',
     key: 'status',
     sort: 'desc',
     customSlot: 'status',
-    fixed: 'left', resize: true
+    fixed: 'left', resize: true,
+    align: 'center',
   },
-  {title: '店铺名称', width: '250px', key: 'shop_id', sort: 'desc', customSlot: 'shop',resize: true},
-  {title: '订单号', width: '180px', key: 'order_no',resize: true},
-  {title: '退货原因', width: '160px', key: 'back_reason', sort: 'desc',resize: true},
-  {title: '客服备注', width: '160px', key: 'kf_remark',resize: true},
-  {title: '物流单号', width: '150px', key: 'logistics_no',resize: true},
+  {
+    title: '退款状态',
+    width: '100px',
+    key: 'refund_status',
+    sort: 'desc',
+    customSlot: 'refund_status',
+    fixed: 'left', resize: true,
+    align: 'center',
+  },
+  {title: '店铺名称', width: '250px', key: 'shop_id', sort: 'desc', customSlot: 'shop', resize: true},
+  {title: '订单号', width: '180px', key: 'order_no', resize: true},
+  {title: '退货原因', width: '160px', key: 'back_reason', sort: 'desc', resize: true},
+  {title: '客服备注', width: '160px', key: 'kf_remark', resize: true},
+  {title: '物流单号', width: '150px', key: 'logistics_no', resize: true},
   {
     title: '更新时间',
     width: '160px',
     key: 'update_time',
     sort: 'desc',
-    customSlot: 'update_time',resize: true
+    customSlot: 'update_time', resize: true
   },
-  {title: '退款单号', width: '160px', key: 'refund_no',resize: true},
-  {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc',resize: true},
-  {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc',resize: true},
-  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc',resize: true},
-  {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc',resize: true},
+  {title: '退款单号', width: '160px', key: 'refund_no', resize: true},
+  {title: '淘宝名称', width: '150px', key: 'taobao_name', sort: 'desc', resize: true},
+  {title: '物流名称', width: '120px', key: 'logistics_name', sort: 'desc', resize: true},
+  {title: '退货单据号', width: '200px', key: 'br_id', sort: 'desc', resize: true},
+  {title: '更新人', width: '120px', key: 'update_user_name', sort: 'desc', resize: true},
   {
     title: '创建时间',
     width: '160px',
     key: 'create_time',
     sort: 'desc',
-    customSlot: 'create_time',resize: true
+    customSlot: 'create_time', resize: true
   },
-  {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc',resize: true},
+  {title: '创建人', width: '120px', key: 'create_user_name', sort: 'desc', resize: true},
   {
     title: '操作',
     width: '260px',
@@ -1042,7 +1269,28 @@ const columns2 = ref([
     fixed: 'right'
   }
 ])
-
+const columnsShopDispute = ref([
+  {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
+  {title: 'ID', width: '60px', key: 'id', hide: true},
+  {title: '店铺id', width: '180px', key: 'shop_id', hide: true},
+  {title: '店铺名称', width: '180px', key: 'shop_name', resize: true},
+  {title: '订单号', width: '180px', key: 'order_no', resize: true},
+  {title: '退款单号', width: '160px', key: 'refund_no', resize: true},
+  {title: '主图', width: '120px', key: 'img', customSlot: 'img',},
+  {title: 'sku', width: '180px', key: 'sku', sort: 'desc'},
+  {title: '商品标题', width: '280px', key: 'product_title', sort: 'desc'},
+  {title: '备注', width: '280px', key: 'remark', sort: 'desc'},
+  {title: '退货原因', width: '280px', key: 'back_reason', sort: 'desc'},
+  {title: '物流单号', width: '180px', key: 'logistics_no', sort: 'desc'},
+  {
+    title: '操作',
+    width: '120px',
+    customSlot: 'operator',
+    key: 'operator',
+    fixed: 'right'
+  }
+])
+const dataSourceShopDispute = ref()
 const columns3 = ref([
   {title: '选项', width: '60px', type: 'checkbox', fixed: 'left'},
   {title: '序号', width: '80px', type: 'number', fixed: 'left', sort: 'desc'},
@@ -1057,7 +1305,7 @@ const columns3 = ref([
   {title: '转入仓库', width: '120px', key: 'warehouse_name', sort: 'desc', customSlot: 'warehouse_name'},
   {title: '是否返厂', width: '120px', key: 'is_back_to_factory', sort: 'desc', customSlot: 'is_back_to_factory'},
   {title: '入库单号', width: '200px', key: 'put_in_warehouse_no', sort: 'desc'},
-  {title: '次品备注', width: '200px', key: 'remark', sort: 'desc',customSlot:'remark'},
+  {title: '次品备注', width: '200px', key: 'remark', sort: 'desc', customSlot: 'remark'},
   {
     title: '操作',
     width: '160px',
@@ -1090,6 +1338,7 @@ const updateDataSource = async (id: number) => {
     limit: page.limit,
     shop_id: searchQuery.value.shop_id,
     status: searchQuery.value.status,
+    refund_status: searchQuery.value.refund_status,
     br_id: searchQuery.value.br_id,
     logistics_no: searchQuery.value.logistics_no,
     create_time: searchQuery.value.create_time,
@@ -1123,6 +1372,7 @@ const queryDataSource = async () => {
     limit: page.limit,
     shop_id: searchQuery.value.shop_id,
     status: searchQuery.value.status,
+    refund_status: searchQuery.value.refund_status,
     br_id: searchQuery.value.br_id,
     logistics_no: searchQuery.value.logistics_no,
     create_time: searchQuery.value.create_time,
@@ -1250,6 +1500,22 @@ function toRemove() {
   })
 }
 
+const switchBackRecordStatusRefuse = async (row: any) => {
+  let switch_status = 2
+  let data: switchBackRecordStatusBody = {
+    br_id: row.br_id,
+    status: switch_status
+  }
+  await apiSwitchBackRecordStatusBody(data).then(res => {
+    let {code, message} = res
+    if (code === 0) {
+      layer.msg('操作成功')
+      queryDataSource()
+    } else {
+      layer.msg(message)
+    }
+  })
+}
 
 const switchBackRecordStatus = async (row: any) => {
   let switch_status = row.status === 0 ? 1 : 0
@@ -1295,6 +1561,34 @@ const addBackRecord = async () => {
       layer.msg(message)
     }
   })
+}
+
+const getCurrentRow = (rowId: number, rowList: Array<any>) => {
+  return rowList.find(item => item.id === rowId)
+}
+
+const createBackRecord = async (idList: Array<number>) => {
+  for (let i = 0; i < idList.length; i++) {
+    let row = getCurrentRow(idList[i], dataSourceShopDispute.value)
+    let data: addBackRecordBody = {
+      shop_id: row.shop_id,
+      order_no: row.order_no,
+      refund_no: row.refund_no,
+      taobao_name: "",
+      logistics_name: "",
+      logistics_no: row.logistics_no,
+      kf_remark: row.remark,
+      back_reason: row.back_reason,
+    }
+    await apiAddBackRecord(data).then(res => {
+      let {code, message} = res
+      if (code !== 0) {
+        layer.msg(message)
+      }
+    })
+  }
+  await queryDataSource()
+  shopDisputeVisible.value = !shopDisputeVisible.value
 }
 
 function toSubmit() {

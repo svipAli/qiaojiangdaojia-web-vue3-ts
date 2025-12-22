@@ -6,6 +6,10 @@ import {
     setProductPartStatusBody, setProductTrayBody, setProductPartCountBody, getProductPartIdBody
 } from "@/types/warehouse-return";
 
+export const apiQueryConfirmUser= () => {
+    return Http.get('/query_confirm_user')
+}
+
 export const apiQueryBack = (data: getBackQueryBody) => {
     return Http.post('/query_return', data)
 }
