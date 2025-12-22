@@ -194,16 +194,6 @@ export default [
                 meta: {title: '菜单管理', requireAuth: true},
             },
             {
-                path: '/system/organization',
-                component: () => import('../../views/system/organization/index.vue'),
-                meta: {title: '机构管理', requireAuth: true},
-            },
-            {
-                path: '/system/dictionary',
-                component: () => import('../../views/system/dictionary/index.vue'),
-                meta: {title: '字典管理', requireAuth: true},
-            },
-            {
                 path: '/system/file',
                 component: () => import('../../views/system/file/index.vue'),
                 meta: {title: '文件管理', requireAuth: true},
@@ -233,71 +223,6 @@ export default [
                 path: '/result/failure',
                 component: () => import('../../views/result/failure.vue'),
                 meta: {title: '失败页面', requireAuth: true},
-            },
-        ]
-    }, {
-        path: '/list',
-        component: BasicLayout,
-        meta: {title: '列表页面'},
-        children: [
-            {
-                path: '/table/base',
-                component: () => import('../../views/table/base.vue'),
-                meta: {title: '查询列表', requireAuth: true},
-            },
-            {
-                path: '/table/card',
-                component: () => import('../../views/table/card.vue'),
-                meta: {title: '卡片列表', requireAuth: true},
-            },
-            {
-                path: '/table/project',
-                component: () => import('../../views/table/project.vue'),
-                meta: {title: '项目列表', requireAuth: true},
-            },
-            {
-                path: '/table/article',
-                component: () => import('../../views/table/article.vue'),
-                meta: {title: '文章列表', requireAuth: true},
-            }
-        ]
-    }, {
-        path: '/form',
-        component: BasicLayout,
-        meta: {title: '表单页面'},
-        children: [
-            {
-                path: '/form/base',
-                component: () => import('../../views/form/base.vue'),
-                meta: {title: '基础表单', requireAuth: true},
-            },
-            {
-                path: '/form/step',
-                component: () => import('../../views/form/step.vue'),
-                meta: {title: '分步表单', requireAuth: true},
-            },
-            {
-                path: '/form/intricate',
-                name: 'Intricate',
-                component: () => import('../../views/form/intricate.vue'),
-                meta: {title: '复杂表单', requireAuth: true},
-            },
-            {
-                path: '/form/step',
-                name: 'Step',
-                component: () => import('../../views/form/step.vue'),
-                meta: {title: '分步表单', requireAuth: true},
-            },
-        ]
-    }, {
-        path: '/directive',
-        component: BasicLayout,
-        meta: {title: '内置指令'},
-        children: [
-            {
-                path: '/directive/permission',
-                component: () => import('../../views/directive/permission.vue'),
-                meta: {title: '权限指令', requireAuth: true},
             },
         ]
     }, {
@@ -338,7 +263,5 @@ export default [
             },
 
         ]
-    },
-
-
+    }
 ]
