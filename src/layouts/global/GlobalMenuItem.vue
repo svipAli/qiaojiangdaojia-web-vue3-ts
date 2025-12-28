@@ -1,6 +1,6 @@
 <template>
   <template v-for="(menu, index) in menus" :key="index">
-    <template v-if="menu.children">
+    <template v-if="menu.children && menu.show">
       <lay-sub-menu :id="menu.id" :teleportProps="teleportProps">
         <template #icon>
           <lay-icon :type="menu.icon"></lay-icon>
@@ -10,12 +10,14 @@
       </lay-sub-menu>
     </template>
     <template v-else>
-      <lay-menu-item :id="menu.id">
-        <template #icon>
-          <lay-icon :type="menu.icon"></lay-icon>
-        </template>
-        <template #title>{{ menu.title }}</template>
-      </lay-menu-item>
+      <template v-if="menu.show">
+        <lay-menu-item :id="menu.id">
+          <template #icon>
+            <lay-icon :type="menu.icon"></lay-icon>
+          </template>
+          <template #title>{{ menu.title }}</template>
+        </lay-menu-item>
+      </template>
     </template>
   </template>
 </template>

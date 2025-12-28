@@ -113,12 +113,18 @@ export default [
             //     component: () => import('@/views/qiaojiang/qj_inventoryRecord/index.vue'),
             //     meta: {title: '巧匠库存单据', requireAuth: true},
             // },
-            // {
-            //     path: '/qiaojiang/qj_warehouse',
-            //     name: 'QiaojiangWarehouse',
-            //     component: () => import('@/views/qiaojiang/qj_warehouse/index.vue'),
-            //     meta: {title: '巧匠仓库管理', requireAuth: true},
-            // },
+            {
+                path: '/qiaojiang/qj_warehouse',
+                name: 'QiaojiangWarehouse',
+                component: () => import('@/views/qiaojiang/qj_warehouse/index.vue'),
+                meta: {title: '巧匠仓库管理', requireAuth: true},
+            },
+            {
+                path: '/qiaojiang/plusMiniProgram',
+                name: 'QiaojiangplusMiniProgram',
+                component: () => import('@/views/qiaojiang/plusMiniProgram/index.vue'),
+                meta: {title: 'Plus小程序', requireAuth: true},
+            },
         ]
     },
     {

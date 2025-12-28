@@ -17,3 +17,11 @@ export const apiEditMenu = (data: EditMenuModel) => {
 export const apiDelMenu = (data: {id: number}) => {
     return Http.post('/del_menu', data)
 }
+
+export const apiEditMenuStatus = (data: {id: number, status: boolean}) => {
+    return Http.post('/edit_menu_status', data)
+}
+
+export const apiEditMenuVisible = (data: {id: number, show: boolean}) => {
+    return Http.post('/edit_menu_visible', data)
+}

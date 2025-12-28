@@ -112,17 +112,17 @@
           </div>
         </template>
         <template #status="{ row }">
-          <lay-switch v-model="row.status"></lay-switch>
+          <lay-switch v-model="row.status" @change="statusChange($event,row)"></lay-switch>
         </template>
         <template #show="{ row }">
-          <lay-switch v-model="row.show"></lay-switch>
+          <lay-switch v-model="row.show" @change="visibleChange($event, row)"></lay-switch>
         </template>
         <template #link_type="{ row }">
           <template v-if="row.link_type">
             <div v-show="row.link_type == 'modal'">
               <lay-tag color="#165DFF" variant="light">模态框</lay-tag>
             </div>
-            <div v-show="row.link_type == '_blank'">
+            <div v-show="row.link_type == 'blank'">
               <lay-tag color="#F5319D" variant="light">新标签</lay-tag>
             </div>
           </template>
@@ -173,7 +173,7 @@
                 <lay-select v-model="model.link_type" placeholder="请选择">
                   <lay-select-option value="" label="内嵌"></lay-select-option>
                   <lay-select-option value="modal" label="模态框"></lay-select-option>
-                  <lay-select-option value="_blank" label="新标签"></lay-select-option>
+                  <lay-select-option value="blank" label="新标签"></lay-select-option>
                 </lay-select>
               </lay-form-item>
               <lay-row>
@@ -205,7 +205,14 @@
 <script setup lang="ts">
 import {onMounted, ref, watch} from 'vue'
 import {layer} from '@layui/layui-vue'
-import {apiAddMenu, apiDelMenu, apiEditMenu, apiGetMenu} from "@/api/module/menu";
+import {
+  apiAddMenu,
+  apiDelMenu,
+  apiEditMenu,
+  apiEditMenuStatus,
+  apiEditMenuVisible,
+  apiGetMenu
+} from "@/api/module/menu";
 import {Result} from "@/types/result";
 import {EditMenuModel} from "@/types/menu";
 
@@ -223,6 +230,26 @@ function toReset() {
   }
 }
 
+const statusChange = async (event: boolean, row: any) => {
+  const res: Result = await apiEditMenuStatus({id: row.id, status: event})
+  if (res.code === 0) {
+    layer.msg('操作成功', {icon: 1, time: 2000})
+    row.status = event
+  } else {
+    layer.msg(res.message, {icon: 2, time: 2000})
+  }
+}
+
+
+const visibleChange = async (event: boolean, row: any) => {
+  const res: Result = await apiEditMenuVisible({id: row.id, show: event})
+  if (res.code === 0) {
+    layer.msg('操作成功', {icon: 1, time: 2000})
+    row.show = event
+  } else {
+    layer.msg(res.message, {icon: 2, time: 2000})
+  }
+}
 
 function toSearch() {
   loading.value = true
